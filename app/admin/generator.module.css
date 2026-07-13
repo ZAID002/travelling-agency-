@@ -257,6 +257,11 @@
   }
   
   /* Reset body and container paddings */
+  :global(body) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
   :global(body), .container, .splitLayout, .previewPanel {
     margin: 0 !important;
     padding: 0 !important;
