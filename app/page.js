@@ -71,7 +71,7 @@ export default function Home() {
           <div className={`${styles.heroLogo} ${styles.animateFadeIn}`}>
             <AnimatedLogo className={styles.largeLogo} theme="dark" />
           </div>
-          <div className={`${styles.badge} ${styles.animateFadeInUp}`}>Hajj & Umrah Tour Management</div>
+          <div className={`${styles.badge} ${styles.animateFadeInUp}`}>Hajj & Umrah Tour Management • Vercel Verified</div>
           <h1 className={`${styles.title} ${styles.animateFadeInUp} ${styles.delay100}`}>
             Plan Your Sacred Journey with <span className={styles.titleHighlight}>Absolute Comfort</span>
           </h1>
