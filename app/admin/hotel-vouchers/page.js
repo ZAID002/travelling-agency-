@@ -635,7 +635,7 @@ function HotelVoucherGeneratorContent() {
               {/* Regards Section */}
               <div style={{ marginBottom: '20px' }}>
                 <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: '#4b5563' }}>Regards,</p>
-                <p style={{ margin: '0 0 2px 0', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '20px', fontWeight: 'bold', color: '#0f4c81', letterSpacing: '1px' }}>ZEESHAN</p>
+                <p style={{ margin: '0 0 2px 0', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '20px', fontWeight: 'bold', color: '#0f4c81', letterSpacing: '1px' }}>SHUJA CH</p>
                 <p style={{ margin: 0, fontSize: '10px', fontWeight: 'bold', color: '#ef4444', letterSpacing: '0.5px' }}>RESERVATION</p>
               </div>
 
