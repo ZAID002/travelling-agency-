@@ -201,6 +201,24 @@ export default function AnimatedLogo({ className, theme, ...props }) {
         svg:hover .globe-container {
           transform: scale(1.04);
         }
+
+        @media print {
+          .ftw-text {
+            fill: #0f4c81 !important;
+          }
+          .swoosh-path {
+            fill: #0ea5e9 !important;
+          }
+          .globe-base {
+            fill: #0284c7 !important;
+          }
+          .divider-line {
+            stroke: #0f4c81 !important;
+          }
+          .divider-plane {
+            fill: #0f4c81 !important;
+          }
+        }
       ` }} />
 
       {/* 1. GLOBE COMPONENT */}
