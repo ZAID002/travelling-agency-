@@ -1,0 +1,199 @@
+.dashboard {
+  padding: 40px 0;
+  background-color: var(--bg-primary);
+  min-height: calc(100vh - 140px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Stats Cards Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.tabsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  gap: 16px;
+}
+
+.tabsGroup {
+  display: flex;
+  gap: 16px;
+}
+
+.statCard {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.statIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(13, 148, 136, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statCard:nth-child(2) .statIcon {
+  background-color: rgba(217, 119, 6, 0.1);
+  color: var(--secondary);
+}
+
+.statCard:nth-child(3) .statIcon {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* Logs and History Section */
+.searchContainer {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.searchBar {
+  flex: 1;
+}
+
+.historySection {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badgeTicket {
+  background-color: rgba(13, 148, 136, 0.1);
+  color: var(--primary);
+}
+
+.badgeHotel {
+  background-color: rgba(217, 119, 6, 0.1);
+  color: var(--secondary);
+}
+
+.badgeMaheen {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .actions a {
+    width: 100%;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .searchContainer {
+    flex-direction: column;
+  }
+
+  .tabsHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabsGroup {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tabsGroup button {
+    width: 100%;
+  }
+
+  .historySection {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,322 @@
+.container {
+  padding: 30px 0;
+  background-color: var(--bg-primary);
+  min-height: calc(100vh - 140px);
+}
+
+.splitLayout {
+  display: grid;
+  grid-template-columns: 4.5fr 5.5fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.formCard {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.formSectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.formGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formGrid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.repeaterItem {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  background-color: var(--bg-primary);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.removeBtn:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* Print Preview Panel */
+.previewPanel {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.previewToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.previewToolbarTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* The actual Voucher A4 sheet style */
+.voucherSheet {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius-sm);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Voucher Subsections styling */
+.voucherHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.voucherBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.voucherLogo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voucherLogo svg {
+  transform: rotate(45deg);
+}
+
+.voucherAgencyInfo {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.voucherTitleBlock {
+  text-align: right;
+}
+
+.voucherTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+.voucherRefTable {
+  margin-top: 8px;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.voucherRefTable td {
+  padding: 4px 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.voucherRefTable td:first-child {
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.voucherSection {
+  margin-bottom: 24px;
+}
+
+.voucherSectionTitle {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+
+/* Specific document grids */
+.voucherGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.infoLabel {
+  font-weight: 700;
+  color: #4b5563;
+  margin-right: 6px;
+}
+
+.infoValue {
+  color: #1f2937;
+}
+
+.printTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+.printTable th {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 700;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.printTable td {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  background-color: #ffffff;
+}
+
+.printTable tr:hover td {
+  background-color: #ffffff; /* Disable hover highlight in print view */
+}
+
+.voucherFooter {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  font-size: 10px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Print CSS Media query */
+@media print {
+  /* Hide navbar, footer, input forms, and controls */
+  :global(header), :global(footer), :global(nav), .formCard, .previewToolbar, .btn, :global(button) {
+    display: none !important;
+  }
+  
+  /* Reset body and container paddings */
+  :global(body), .container, .splitLayout, .previewPanel {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    display: block !important;
+  }
+  
+  .splitLayout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .voucherSheet {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    page-break-inside: avoid;
+  }
+  
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+}
+
+@media (max-width: 1024px) {
+  .splitLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .formCard {
+    max-height: none;
+  }
+  
+  .previewPanel {
+    position: static;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .voucherSheet {
+    min-width: 750px;
+  }
+}
+
+@media (max-width: 768px) {
+  .formGrid2, .formGrid3 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .formSectionTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
