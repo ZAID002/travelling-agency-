@@ -1,10 +1,11 @@
 .hero {
-  background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--text-primary);
   padding: 100px 0 80px 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid var(--border);
 }
 
 .glowBlob1, .glowBlob2 {
@@ -63,7 +64,7 @@
   max-width: 320px;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 15px 35px rgba(56, 189, 248, 0.25));
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.08));
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -84,9 +85,9 @@
 .badge {
   display: inline-block;
   padding: 6px 12px;
-  background-color: rgba(13, 148, 136, 0.2);
+  background-color: rgba(13, 148, 136, 0.08);
   border: 1px solid var(--primary);
-  color: #2dd4bf;
+  color: var(--primary);
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -118,7 +119,7 @@
 
 .subtitle {
   font-size: 18px;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   margin-bottom: 36px;
   line-height: 1.6;
 }
