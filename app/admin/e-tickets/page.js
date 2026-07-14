@@ -7,7 +7,6 @@ import {
   UserPlus, FileCheck, ArrowLeft, ArrowRight
 } from 'lucide-react';
 import styles from '../generator.module.css';
-import AnimatedLogo from '@/components/AnimatedLogo';
 
 // Component wrapped in Suspense to satisfy search params usage
 function ETicketGeneratorContent() {
@@ -553,8 +552,8 @@ function ETicketGeneratorContent() {
               {/* Header */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0d9488', paddingBottom: '12px', marginBottom: '15px' }}>
-                  <div style={{ width: '150px', height: '65px', display: 'flex', alignItems: 'center' }}>
-                    <AnimatedLogo theme="light" />
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '70px', width: 'auto', objectFit: 'contain' }} />
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: '#0d9488', letterSpacing: '0.5px' }}>FLY TO WAY TRAVEL & TOURS</h1>
