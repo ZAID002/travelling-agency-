@@ -52,9 +52,10 @@ export default function AnimatedLogo({ className, theme, ...props }) {
         </linearGradient>
 
         {/* Text gradients */}
-        <linearGradient id="text-grad-light" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#0a4c95" />
-          <stop offset="100%" stopColor="#002d62" />
+        <linearGradient id="text-grad-light" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#061e40" />
+          <stop offset="60%" stopColor="#0a4c95" />
+          <stop offset="100%" stopColor="#0ea5e9" />
         </linearGradient>
         
         <linearGradient id="text-grad-dark" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -301,14 +302,14 @@ export default function AnimatedLogo({ className, theme, ...props }) {
         <text 
           x="325" 
           y="118" 
-          fontFamily="'Playfair Display', Georgia, serif" 
+          fontFamily="'Montserrat', 'Arial Black', sans-serif" 
           fontWeight="900" 
-          fontSize="54" 
-          letterSpacing="1" 
+          fontSize="35" 
+          letterSpacing="1.2" 
           textAnchor="middle"
           className="ftw-text"
         >
-          FTW
+          FLY TO WAY
         </text>
 
         {/* Divider with Center Airplane */}
