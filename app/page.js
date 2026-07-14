@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import styles from './page.module.css';
 import AnimatedSection from '@/components/AnimatedSection';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -68,7 +69,7 @@ export default function Home() {
         <div className={styles.glowBlob2}></div>
         <div className={`${styles.heroContent} container`}>
           <div className={`${styles.heroLogo} ${styles.animateFadeIn}`}>
-            <img src="/logo.png" alt="Fly To Way Logo" className={styles.largeLogo} style={{ objectFit: 'contain' }} />
+            <AnimatedLogo className={styles.largeLogo} theme="dark" layout="vertical" />
           </div>
           <div className={`${styles.badge} ${styles.animateFadeInUp}`}>Hajj & Umrah Tour Management</div>
           <h1 className={`${styles.title} ${styles.animateFadeInUp} ${styles.delay100}`}>

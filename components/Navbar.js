@@ -20,8 +20,9 @@ export default function Navbar() {
     <header className={styles.header}>
       <div className={`${styles.container} container`}>
         <Link href="/" className={styles.logoLink} onClick={() => setIsOpen(false)}>
-          <div className={styles.logo} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+          <div className={styles.logo}>
+            <Plane className={styles.logoIcon} size={24} />
+            <span className={styles.logoText}>Fly To Way</span>
           </div>
         </Link>
 
