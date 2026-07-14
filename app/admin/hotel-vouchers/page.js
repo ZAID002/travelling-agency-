@@ -472,7 +472,7 @@ function HotelVoucherGeneratorContent() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{ width: '130px', color: '#4b5563', fontWeight: 'bold', fontSize: '11px' }}>Client / Company</span>
                   <span style={{ marginRight: '8px', color: '#4b5563' }}>:</span>
-                  <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '11px' }}>{voucherData.clientName ? voucherData.clientName.toUpperCase() : 'FLY TO WAY'}</span>
+                  <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '11px' }}>FLY TO WAY</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{ width: '130px', color: '#4b5563', fontWeight: 'bold', fontSize: '11px' }}>Guest Name</span>
@@ -486,16 +486,16 @@ function HotelVoucherGeneratorContent() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Stay</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>City</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Hotel Name / Category</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Room Type</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>View</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Meal Plan</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Check In</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Check Out</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>Nights</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>HCN #</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Stay</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>City</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Hotel Name / Category</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Room Type</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>View</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Meal Plan</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check In</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check Out</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Nights</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>HCN #</th>
                     </tr>
                   </thead>
                   <tbody>
