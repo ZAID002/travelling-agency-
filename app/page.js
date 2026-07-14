@@ -69,7 +69,7 @@ export default function Home() {
         <div className={styles.glowBlob2}></div>
         <div className={`${styles.heroContent} container`}>
           <div className={`${styles.heroLogo} ${styles.animateFadeIn}`}>
-            <AnimatedLogo className={styles.largeLogo} theme="dark" />
+            <AnimatedLogo className={styles.largeLogo} theme="dark" layout="vertical" />
           </div>
           <div className={`${styles.badge} ${styles.animateFadeInUp}`}>Hajj & Umrah Tour Management</div>
           <h1 className={`${styles.title} ${styles.animateFadeInUp} ${styles.delay100}`}>
