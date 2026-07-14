@@ -329,3 +329,21 @@ tr:hover td {
   animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Global Print Settings */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  header, footer, nav, button {
+    display: none !important;
+  }
+}
+
