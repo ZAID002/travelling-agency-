@@ -322,3 +322,284 @@
     gap: 8px;
   }
 }
+
+/* E-Ticket Specific Styles */
+.ticketAlert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ticketAlertTitle {
+  font-weight: 700;
+  color: #166534;
+  font-size: 14px;
+}
+
+.ticketAlertDesc {
+  color: #15803d;
+  font-size: 12px;
+}
+
+.greenTableHeader {
+  background-color: #035a37 !important;
+  color: #ffffff !important;
+  text-transform: uppercase;
+}
+
+.ticketCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.ticketCardHeader {
+  background-color: #035a37;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ticketCardBody {
+  display: grid;
+  grid-template-columns: 3fr 1.2fr;
+}
+
+.routeDetails {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.6fr 1.2fr;
+  align-items: center;
+}
+
+.routeCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routeDate {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+}
+
+.routeTime {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.routeCode {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.routeCity {
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.routeAirport {
+  font-size: 10px;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+.flightPath {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.flightLine {
+  height: 1px;
+  background-color: #d1d5db;
+  width: 100%;
+}
+
+.flightIcon {
+  color: #035a37;
+  background: #ffffff;
+  padding: 0 6px;
+  position: absolute;
+}
+
+.serviceDetails {
+  border-left: 1px solid #e5e7eb;
+  padding: 16px;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.serviceClass {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.serviceItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.serviceIcon {
+  color: #035a37;
+  flex-shrink: 0;
+}
+
+.rulesContainer {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  padding: 14px;
+  margin-top: 15px;
+  text-align: left;
+}
+
+.rulesTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
+}
+
+.rulesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rulesList li {
+  font-size: 11px;
+  color: #374151;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.rulesBullet {
+  color: #035a37;
+  font-weight: bold;
+}
+
+/* Form styling updates */
+.stepTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #035a37;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formNotice {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #15803d;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.uploadZone {
+  border: 2px dashed #035a37;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.uploadZone:hover {
+  background-color: #f0fdf4;
+  border-color: #166534;
+}
+
+.uploadText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.uploadSubtext {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.inputTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.inputTable th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  padding: 8px 6px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.inputTable td {
+  padding: 8px 4px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+
