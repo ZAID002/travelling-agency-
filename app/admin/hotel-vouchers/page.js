@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Hotel, Plus, Trash2, Printer, Save, RefreshCw, 
-  User, FileText, ArrowLeft, Calendar, Bell
+  User, FileText, ArrowLeft, Calendar, Bell, Search
 } from 'lucide-react';
 import styles from '../generator.module.css';
 
@@ -17,46 +17,51 @@ function HotelVoucherGeneratorContent() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  // Initial Form State matching uploaded Hadaya Tower PDF defaults
-  const [voucherData, setVoucherData] = useState({
+  // Initial state matching https://flytoway.com/hotel-voucher-generator-page/
+  const initialVoucherState = {
     voucherNo: '',
-    status: 'Tentative',
-    issueDate: new Date().toISOString().split('T')[0],
-    clientName: 'FLY TO WAY T&T',
-    guestName: 'RIZWAN KHAN',
-    makkahContact: '+966 50 123 4567 (WhatsApp Available)',
-    madinahContact: '+966 50 765 4321 (WhatsApp Available)',
-    importantNotes: 'RAMZAN BOOKINS ONCE CONFIMRED (NON REFUNABLE/NON CANCELABLE)\nCHECK IN : 18:00 KSA | CHECK OUT : 12:00 KSA',
-    rateOfExchange: '77.50',
-    optionalDate: '2026-02-26',
-    regards: 'MURTUZA',
-    bank1Title: 'Air One Hotels',
-    bank1Name: 'Meezan Bank',
-    bank1Account: '01970109213093',
-    bank1Branch: 'Sharafabad Branch-Karachi',
-    bank2Title: 'Air One Travels',
-    bank2Name: 'Habib Bank Limited',
-    bank2Account: '54497000100203',
-    bank2Branch: 'Sharafabad Branch',
+    status: 'Definite',
+    issueDate: new Date().toLocaleDateString('en-GB'),
+    clientName: 'CLIENT / COMPANY NAME',
+    guestName: 'GUEST NAME',
+    checkInTime: '16:00',
+    checkOutTime: '14:00',
+    remarks: 'REMARK / NOTES',
+    makkahContactName: '',
+    makkahContactNo: '',
+    madinahContactName: '',
+    madinahContactNo: '',
+    companyName: 'FLY TO WAY TRAVEL & TOURS',
+    officeAddress: 'College Road, Lahore - Pakistan',
+    phone: '+923082122760',
+    email: 'info@flytoway.com',
+    authorizedPerson: 'MURTUZA',
+    importantNotes: 'Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.',
     isMaheen: false,
     stays: [
       {
         city: 'Makkah',
-        hotelName: 'HADAYA TOWER',
-        rating: '4 Star',
+        hotelName: '',
+        rating: '5 Star',
         roomType: 'Quad',
-        roomView: 'CV',
-        mealPlan: 'R.O',
-        checkIn: '2026-03-26',
-        checkOut: '2026-03-30',
-        totalNights: 4,
-        hcn: 'ALLOTMENT',
-        qty: 1,
-        rate: 55,
-        total: 220
+        customRoomType: '',
+        roomView: 'Haram View',
+        customRoomView: '',
+        mealPlan: 'RO',
+        checkIn: '',
+        checkOut: '',
+        totalNights: 0,
+        hcn: ''
       }
     ]
-  });
+  };
+
+  const [voucherData, setVoucherData] = useState(initialVoucherState);
+
+  // Search local database states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
   // Fetch details if editing
   useEffect(() => {
@@ -82,13 +87,18 @@ function HotelVoucherGeneratorContent() {
   }, [editVoucherNo]);
 
   const generateRandomVoucher = () => {
-    const rand = Math.floor(100000 + Math.random() * 900000);
-    setVoucherData(prev => ({ ...prev, voucherNo: `FTW-HV-${rand}` }));
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    setVoucherData(prev => ({ ...prev, voucherNo: `F-${rand}` }));
   };
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setVoucherData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFieldChangeUpper = (e) => {
+    const { name, value } = e.target;
+    setVoucherData(prev => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
   // Helper to compute nights
@@ -104,12 +114,7 @@ function HotelVoucherGeneratorContent() {
   // Stay Handlers
   const handleStayChange = (index, field, value) => {
     const updated = [...voucherData.stays];
-    
-    if (field === 'qty' || field === 'rate' || field === 'total') {
-      updated[index][field] = parseFloat(value) || 0;
-    } else {
-      updated[index][field] = value;
-    }
+    updated[index][field] = value;
     
     // Auto-calculate nights if check-in or check-out changes
     if (field === 'checkIn' || field === 'checkOut') {
@@ -117,12 +122,6 @@ function HotelVoucherGeneratorContent() {
       const checkOutVal = field === 'checkOut' ? value : updated[index].checkOut;
       updated[index].totalNights = calculateNights(checkInVal, checkOutVal);
     }
-    
-    // Auto-calculate stay total price (qty * totalNights * rate)
-    const qty = parseFloat(updated[index].qty) || 0;
-    const nights = parseFloat(updated[index].totalNights) || 0;
-    const rate = parseFloat(updated[index].rate) || 0;
-    updated[index].total = qty * nights * rate;
     
     setVoucherData(prev => ({ ...prev, stays: updated }));
   };
@@ -135,17 +134,16 @@ function HotelVoucherGeneratorContent() {
         {
           city: 'Makkah',
           hotelName: '',
-          rating: '4 Star',
+          rating: '5 Star',
           roomType: 'Quad',
-          roomView: 'CV',
-          mealPlan: 'R.O',
+          customRoomType: '',
+          roomView: 'Haram View',
+          customRoomView: '',
+          mealPlan: 'RO',
           checkIn: '',
           checkOut: '',
           totalNights: 0,
-          hcn: 'ALLOTMENT',
-          qty: 1,
-          rate: 0,
-          total: 0
+          hcn: ''
         }
       ]
     }));
@@ -155,6 +153,37 @@ function HotelVoucherGeneratorContent() {
     if (voucherData.stays.length === 1) return;
     const updated = voucherData.stays.filter((_, i) => i !== index);
     setVoucherData(prev => ({ ...prev, stays: updated }));
+  };
+
+  // Reset form to defaults
+  const handleReset = () => {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    setVoucherData({
+      ...initialVoucherState,
+      voucherNo: `F-${rand}`
+    });
+    setSearchResults([]);
+    setSearchQuery('');
+  };
+
+  // Search Vouchers
+  const executeSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    try {
+      const res = await fetch(`/api/vouchers/hotel?isMaheen=false&search=${searchQuery}`);
+      const data = await res.json();
+      if (res.ok) {
+        setSearchResults(data);
+      }
+    } catch (err) {
+      console.error('Search failed', err);
+    } finally {
+      setSearching(false);
+    }
   };
 
   // Save to DB
@@ -186,102 +215,153 @@ function HotelVoucherGeneratorContent() {
 
   return (
     <div className={styles.container}>
+      <style>{`
+        @media print {
+          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .previewToolbar, .previewToolbar * {
+            display: none !important;
+          }
+          body, html {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .previewPanel {
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          #voucher-print {
+            width: 100% !important;
+            max-width: 100% !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+          }
+        }
+      `}</style>
       <div className="container">
         
-        {/* Navigation */}
-        <div className="no-print-bar" style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+        {/* Navigation & Controls header */}
+        <div className="no-print-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <button onClick={() => router.push('/admin/dashboard')} className="btn btn-outline" style={{ padding: '6px 12px' }}>
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
+          
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={handleReset} className="btn btn-outline" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+              Reset All
+            </button>
+            <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0f4c81', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Voucher'}
+            </button>
+            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <Printer size={14} style={{ marginRight: 6 }} /> Generate Voucher PDF
+            </button>
+          </div>
         </div>
 
         <div className={styles.splitLayout}>
           
           {/* LEFT: Form Panel */}
           <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
-            <div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#035a37' }}>Hotel Confirmation Form</h2>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Add guest credentials, rates, and hotels. Updates render in real-time.</p>
+            
+            {/* Search Saved Vouchers */}
+            <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
+              <strong style={{ display: 'block', fontSize: '13px', marginBottom: '8px', color: '#0f4c81' }}>Search Saved Vouchers</strong>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Voucher, guest, company, HCN, remark or contact"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ flex: 1, fontSize: '12px', padding: '8px' }}
+                />
+                <button onClick={executeSearch} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0d9488', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                  <Search size={14} /> Search
+                </button>
+              </div>
+              
+              {searchResults.length > 0 && (
+                <div style={{ marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '8px', maxHeight: '180px', overflowY: 'auto' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>Search Results:</span>
+                  {searchResults.map((v) => (
+                    <div
+                      key={v._id}
+                      onClick={() => {
+                        setVoucherData(v);
+                        setSearchResults([]);
+                      }}
+                      style={{ padding: '6px 8px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', fontSize: '12px', display: 'flex', justifyContent: 'space-between', hover: { backgroundColor: '#f1f5f9' } }}
+                    >
+                      <span style={{ fontWeight: 'bold', color: '#0f4c81' }}>{v.voucherNo}</span>
+                      <span style={{ color: '#1e293b' }}>{v.guestName}</span>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>{v.clientName}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {error && <div className={styles.errorBox} style={{ margin: 0 }}>{error}</div>}
-            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Voucher saved successfully in database!</div>}
+            {error && <div className={styles.errorBox} style={{ margin: '0 0 15px 0' }}>{error}</div>}
+            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center', marginBottom: 15 }}>Voucher saved successfully in database!</div>}
 
-            {/* Document details */}
-            <div className={styles.formSectionTitle}>
-              <span>Document Settings</span>
+            {/* 1. Voucher Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px' }}>
+              <span>1. Voucher Details</span>
             </div>
-            <div className={styles.formGrid2}>
+            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
-                <label>Voucher / Serial Number</label>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <label>Voucher / Booking No.</label>
+                <div style={{ display: 'flex', gap: 6 }}>
                   <input
                     type="text"
                     name="voucherNo"
                     required
-                    readOnly={!!editVoucherNo}
                     value={voucherData.voucherNo}
                     onChange={handleFieldChange}
                   />
-                  {!editVoucherNo && (
-                    <button type="button" onClick={generateRandomVoucher} className="btn btn-outline" style={{ padding: 10 }}>
-                      <RefreshCw size={14} />
-                    </button>
-                  )}
+                  <button type="button" onClick={generateRandomVoucher} className="btn btn-outline" style={{ padding: 8 }}>
+                    <RefreshCw size={12} />
+                  </button>
                 </div>
               </div>
               <div className={styles.formGroup}>
                 <label>Booking Status</label>
                 <select name="status" value={voucherData.status} onChange={handleFieldChange}>
+                  <option value="Definite">Definite</option>
                   <option value="Tentative">Tentative</option>
-                  <option value="Confirmed">Confirmed</option>
                   <option value="Hold">Hold</option>
                   <option value="Pending">Pending</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
-            </div>
-
-            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
-                <label>Rate of Exchange</label>
+                <label>Generated Date</label>
                 <input
                   type="text"
-                  name="rateOfExchange"
-                  value={voucherData.rateOfExchange}
+                  name="issueDate"
+                  placeholder="DD/MM/YYYY"
+                  value={voucherData.issueDate}
                   onChange={handleFieldChange}
-                  placeholder="e.g. 77.50"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Optional/Clearance Date</label>
-                <input
-                  type="date"
-                  name="optionalDate"
-                  value={voucherData.optionalDate}
-                  onChange={handleFieldChange}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Regards / Officer</label>
-                <input
-                  type="text"
-                  name="regards"
-                  value={voucherData.regards}
-                  onChange={handleFieldChange}
-                  placeholder="e.g. MURTUZA"
                 />
               </div>
             </div>
 
+            {/* 2. Client / Guest Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>2. Client / Guest Details</span>
+            </div>
             <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
-                <label>Client Name / Agency</label>
+                <label>Client / Company Name</label>
                 <input
                   type="text"
                   name="clientName"
                   value={voucherData.clientName}
-                  onChange={handleFieldChange}
+                  onChange={handleFieldChangeUpper}
                 />
               </div>
               <div className={styles.formGroup}>
@@ -289,63 +369,244 @@ function HotelVoucherGeneratorContent() {
                 <input
                   type="text"
                   name="guestName"
-                  required
-                  placeholder="e.g. RIZWAN KHAN"
                   value={voucherData.guestName}
-                  onChange={(e) => setVoucherData(prev => ({ ...prev, guestName: e.target.value.toUpperCase() }))}
+                  onChange={handleFieldChangeUpper}
                 />
               </div>
             </div>
 
-            {/* Bank details customization */}
-            <div className={styles.formSectionTitle}>
-              <span>Bank Details Customization</span>
-            </div>
-            <div className={styles.formGrid2}>
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <strong style={{ fontSize: '12px', color: '#035a37' }}>Bank Account 1 (Left)</strong>
-                <div className={styles.formGroup}>
-                  <label>Account Title</label>
-                  <input type="text" name="bank1Title" value={voucherData.bank1Title} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Bank Name</label>
-                  <input type="text" name="bank1Name" value={voucherData.bank1Name} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Account Number</label>
-                  <input type="text" name="bank1Account" value={voucherData.bank1Account} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Branch</label>
-                  <input type="text" name="bank1Branch" value={voucherData.bank1Branch} onChange={handleFieldChange} />
-                </div>
-              </div>
-
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <strong style={{ fontSize: '12px', color: '#035a37' }}>Bank Account 2 (Right)</strong>
-                <div className={styles.formGroup}>
-                  <label>Account Title</label>
-                  <input type="text" name="bank2Title" value={voucherData.bank2Title} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Bank Name</label>
-                  <input type="text" name="bank2Name" value={voucherData.bank2Name} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Account Number</label>
-                  <input type="text" name="bank2Account" value={voucherData.bank2Account} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Branch</label>
-                  <input type="text" name="bank2Branch" value={voucherData.bank2Branch} onChange={handleFieldChange} />
-                </div>
-              </div>
+            {/* 3. Multiple Hotel Stays */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>3. Multiple Hotel Stays</span>
+              <button type="button" onClick={addStay} style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#10b981', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+                <Plus size={12} /> Add Hotel
+              </button>
             </div>
 
-            {/* General notes */}
-            <div className={styles.formGroup} style={{ marginTop: '10px' }}>
-              <label>Important Notes / Terms</label>
+            {voucherData.stays.map((stay, index) => (
+              <div key={index} style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginTop: '10px', backgroundColor: '#ffffff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <strong style={{ fontSize: '13px', color: '#0f4c81' }}>Stay {index + 1}</strong>
+                  {voucherData.stays.length > 1 && (
+                    <button type="button" onClick={() => removeStay(index)} style={{ border: 'none', background: '#ef4444', color: '#ffffff', fontSize: '11px', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+                      Delete
+                    </button>
+                  )}
+                </div>
+
+                <div className={styles.formGrid2}>
+                  <div className={styles.formGroup}>
+                    <label>City</label>
+                    <select value={stay.city} onChange={(e) => handleStayChange(index, 'city', e.target.value)}>
+                      <option value="Makkah">Makkah</option>
+                      <option value="Madinah">Madinah</option>
+                      <option value="Jeddah">Jeddah</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Hotel Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter hotel name"
+                      value={stay.hotelName}
+                      onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Hotel Category</label>
+                    <select value={stay.rating} onChange={(e) => handleStayChange(index, 'rating', e.target.value)}>
+                      <option value="5 Star">5 Star</option>
+                      <option value="4 Star">4 Star</option>
+                      <option value="3 Star">3 Star</option>
+                      <option value="Standard">Standard / Economy</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Room Type</label>
+                    <select value={stay.roomType} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)}>
+                      <option value="Quad">Quad</option>
+                      <option value="Triple">Triple</option>
+                      <option value="Double">Double</option>
+                      <option value="Single">Single</option>
+                      <option value="Custom Room (optional)">Custom Room (optional)</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Custom Room (optional)</label>
+                    <input
+                      type="text"
+                      placeholder="Write any room type"
+                      value={stay.customRoomType}
+                      onChange={(e) => handleStayChange(index, 'customRoomType', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Room View</label>
+                    <select value={stay.roomView} onChange={(e) => handleStayChange(index, 'roomView', e.target.value)}>
+                      <option value="Haram View">Haram View</option>
+                      <option value="City View">City View</option>
+                      <option value="Kaaba View">Kaaba View</option>
+                      <option value="Custom View (optional)">Custom View (optional)</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Custom View (optional)</label>
+                    <input
+                      type="text"
+                      placeholder="Write custom view"
+                      value={stay.customRoomView}
+                      onChange={(e) => handleStayChange(index, 'customRoomView', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Meal Plan</label>
+                    <select value={stay.mealPlan} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)}>
+                      <option value="RO">RO</option>
+                      <option value="BB">BB</option>
+                      <option value="HB">HB</option>
+                      <option value="FB">FB</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formGrid4} style={{ marginTop: '8px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Check In</label>
+                    <input
+                      type="date"
+                      value={stay.checkIn}
+                      onChange={(e) => handleStayChange(index, 'checkIn', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Check Out</label>
+                    <input
+                      type="date"
+                      value={stay.checkOut}
+                      onChange={(e) => handleStayChange(index, 'checkOut', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Nights</label>
+                    <input
+                      type="number"
+                      readOnly
+                      style={{ backgroundColor: '#f1f5f9' }}
+                      value={stay.totalNights}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>HCN #</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. HCN-12345"
+                      value={stay.hcn}
+                      onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* 4. Additional Information */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>4. Additional Information</span>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Check-in Time</label>
+                <input
+                  type="text"
+                  name="checkInTime"
+                  value={voucherData.checkInTime}
+                  onChange={handleFieldChange}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Check-out Time</label>
+                <input
+                  type="text"
+                  name="checkOutTime"
+                  value={voucherData.checkOutTime}
+                  onChange={handleFieldChange}
+                />
+              </div>
+            </div>
+            <div className={styles.formGroup} style={{ marginTop: '8px' }}>
+              <label>Remarks / Note</label>
+              <textarea
+                name="remarks"
+                value={voucherData.remarks}
+                onChange={handleFieldChangeUpper}
+                rows={2}
+              />
+            </div>
+
+            {/* 5. Contact Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>5. Contact Details</span>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
+                <strong style={{ fontSize: '11px', color: '#0f4c81', display: 'block', marginBottom: '6px' }}>Makkah Hotel Contact</strong>
+                <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
+                  <label>Contact Name</label>
+                  <input type="text" name="makkahContactName" value={voucherData.makkahContactName} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>WhatsApp No.</label>
+                  <input type="text" name="makkahContactNo" value={voucherData.makkahContactNo} onChange={handleFieldChange} />
+                </div>
+              </div>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
+                <strong style={{ fontSize: '11px', color: '#0f4c81', display: 'block', marginBottom: '6px' }}>Madinah Hotel Contact</strong>
+                <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
+                  <label>Contact Name</label>
+                  <input type="text" name="madinahContactName" value={voucherData.madinahContactName} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>WhatsApp No.</label>
+                  <input type="text" name="madinahContactNo" value={voucherData.madinahContactNo} onChange={handleFieldChange} />
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Company Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>6. Company Details</span>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Company Name</label>
+                <input type="text" name="companyName" readOnly value={voucherData.companyName} style={{ backgroundColor: '#f1f5f9' }} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Office Address</label>
+                <input type="text" name="officeAddress" readOnly value={voucherData.officeAddress} style={{ backgroundColor: '#f1f5f9' }} />
+              </div>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
+              <div className={styles.formGroup}>
+                <label>WhatsApp</label>
+                <input type="text" name="phone" readOnly value={voucherData.phone} style={{ backgroundColor: '#f1f5f9' }} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Email</label>
+                <input type="text" name="email" readOnly value={voucherData.email} style={{ backgroundColor: '#f1f5f9' }} />
+              </div>
+            </div>
+            <div className={styles.formGroup} style={{ marginTop: '8px' }}>
+              <label>Authorized Person Name</label>
+              <input type="text" name="authorizedPerson" value={voucherData.authorizedPerson} onChange={handleFieldChangeUpper} />
+            </div>
+            <div className={styles.formGroup} style={{ marginTop: '8px' }}>
+              <label>Important Note (Editable)</label>
               <textarea
                 name="importantNotes"
                 value={voucherData.importantNotes}
@@ -353,360 +614,234 @@ function HotelVoucherGeneratorContent() {
                 rows={4}
               />
             </div>
-
-            {/* Dynamic stays */}
-            <div className={styles.formSectionTitle}>
-              <span>Stay & Pricing Details ({voucherData.stays.length})</span>
-              <button type="button" onClick={addStay} className={styles.removeBtn} style={{ color: '#035a37', display: 'flex', alignItems: 'center', gap: '4px', border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
-                <Plus size={14} /> Add Segment
-              </button>
-            </div>
-
-            {voucherData.stays.map((stay, index) => (
-              <div key={index} className={styles.repeaterItem} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <span style={{ fontSize: 13, fontWeight: '700', color: '#035a37' }}>Stay Segment #{index + 1}</span>
-                  {voucherData.stays.length > 1 && (
-                    <button type="button" onClick={() => removeStay(index)} className={styles.removeBtn} style={{ border: 'none', background: 'none', color: '#ef4444', fontWeight: 'bold', cursor: 'pointer' }}>
-                      <Trash2 size={12} /> Remove
-                    </button>
-                  )}
-                </div>
-
-                <div className={styles.formGrid3} style={{ marginBottom: 10 }}>
-                  <div className={styles.formGroup}>
-                    <label>City Location</label>
-                    <select value={stay.city} onChange={(e) => handleStayChange(index, 'city', e.target.value)}>
-                      <option value="Makkah">Makkah</option>
-                      <option value="Madinah">Madinah</option>
-                      <option value="Jeddah">Jeddah</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
-                    <label>Hotel Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. HADAYA TOWER"
-                      value={stay.hotelName}
-                      onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGrid3} style={{ marginBottom: 10 }}>
-                  <div className={styles.formGroup}>
-                    <label>Room Category</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Quad"
-                      value={stay.roomType}
-                      onChange={(e) => handleStayChange(index, 'roomType', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Room View</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. CV"
-                      value={stay.roomView}
-                      onChange={(e) => handleStayChange(index, 'roomView', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Meal Plan (Meal)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. R.O"
-                      value={stay.mealPlan}
-                      onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGrid3} style={{ marginBottom: 10 }}>
-                  <div className={styles.formGroup}>
-                    <label>Check-in Date</label>
-                    <input
-                      type="date"
-                      required
-                      value={stay.checkIn}
-                      onChange={(e) => handleStayChange(index, 'checkIn', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Check-out Date</label>
-                    <input
-                      type="date"
-                      required
-                      value={stay.checkOut}
-                      onChange={(e) => handleStayChange(index, 'checkOut', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Nights (Auto)</label>
-                    <input
-                      type="number"
-                      readOnly
-                      style={{ backgroundColor: 'var(--bg-tertiary)' }}
-                      value={stay.totalNights}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
-                  <div className={styles.formGroup}>
-                    <label>Qty (Rooms) *</label>
-                    <input
-                      type="number"
-                      required
-                      value={stay.qty}
-                      onChange={(e) => handleStayChange(index, 'qty', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Rate (SAR per Night) *</label>
-                    <input
-                      type="number"
-                      required
-                      value={stay.rate}
-                      onChange={(e) => handleStayChange(index, 'rate', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Total Price (Auto)</label>
-                    <input
-                      type="number"
-                      readOnly
-                      style={{ backgroundColor: 'var(--bg-tertiary)', fontWeight: 'bold' }}
-                      value={stay.total}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGroup} style={{ marginTop: '10px' }}>
-                  <label>Hotel Conf. # (Hotel Conf. #)</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. ALLOTMENT"
-                    value={stay.hcn}
-                    onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())}
-                  />
-                </div>
-              </div>
-            ))}
-
-            <button
-              type="button"
-              disabled={saving}
-              onClick={handleSave}
-              className="btn btn-primary"
-              style={{ width: '100%', padding: '12px', marginTop: 10, backgroundColor: '#035a37', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            >
-              <Save size={16} /> {saving ? 'Saving to Database...' : 'Save Hotel Confirmation'}
-            </button>
+            
           </div>
 
           {/* RIGHT: Live print layout */}
           <div className={styles.previewPanel}>
             <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>HOTEL CONFIRMATION PREVIEW (A4 PRINT SHEET)</span>
-              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
-                <Printer size={14} /> Print / Save PDF
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 CONFIRMATION SHEET PREVIEW</span>
+              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
+                <Printer size={14} /> Print PDF
               </button>
             </div>
 
             {/* Document sheet */}
-            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '40px 30px', fontSize: '12px', color: '#000000', lineHeight: '1.4', textSnap: 'none' }}>
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '35px 25px', fontSize: '11.5px', color: '#000000', lineHeight: '1.4' }}>
               
-              {/* PDF Document Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              {/* Header block with Logo and Title */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '65px', width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ color: '#ef4444', fontWeight: '900', fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase', lineHeight: '1' }}>
-                    {voucherData.status.toUpperCase()}
-                  </div>
-                  <div style={{ color: '#ef4444', fontWeight: '900', fontSize: '28px', lineHeight: '1.1', marginBottom: '4px' }}>
-                    {voucherData.voucherNo ? voucherData.voucherNo.replace(/[^\d]/g, '').slice(-4) || '8168' : '8168'}
-                  </div>
-                  <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a' }}>Hotel Booking Confirmation</h1>
-                  <div style={{ fontSize: '13px', margin: '4px 0' }}>
-                    <strong>Booking Status:</strong> <span style={{ color: '#ef4444', fontWeight: 'bold' }}>{voucherData.status}</span>
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', marginTop: '6px', textTransform: 'uppercase', lineHeight: '1.2' }}>
-                    {voucherData.stays[0]?.hotelName || 'HADAYA TOWER'}
-                  </div>
-                  <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase' }}>
-                    {voucherData.stays[0]?.city || 'MAKKAH'}
-                  </div>
+                  <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>FLY TO WAY TRAVEL & TOURS</h1>
+                  <h2 style={{ margin: '4px 0 0 0', fontSize: '10.5px', fontWeight: '700', color: '#ef4444', letterSpacing: '1px' }}>HOTEL BOOKING CONFIRMATION VOUCHER</h2>
                 </div>
               </div>
 
               {/* Salutations and Greeting */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Dear Sir :</div>
-                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#1e3a8a', marginBottom: '6px' }}>
-                  Greeting From <span style={{ color: '#1e3a8a' }}>Fly To Way Travels & Tours</span>.
-                </div>
-                <div style={{ fontSize: '12px', color: '#1f2937', marginBottom: '4px' }}>
-                  First of All, We would like to take this opportunity to welcome you at <span style={{ fontWeight: 'bold' }}>Fly To Way Travels & Tours</span>.
-                </div>
-                <div style={{ fontSize: '12px', color: '#1f2937', marginBottom: '4px' }}>
-                  We are pleased to confirm the following reservation on a <strong style={{ textTransform: 'uppercase' }}>{voucherData.status}</strong> basis.
-                </div>
-                {voucherData.optionalDate && (
-                  <div style={{ fontSize: '12px', color: '#1f2937' }}>
-                    Please clear the amount before: <strong style={{ color: '#ef4444' }}>{voucherData.optionalDate.split('-').reverse().join('-')}</strong>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px', marginBottom: '15px', alignItems: 'start' }}>
+                <div>
+                  <div style={{ margin: '0 0 4px 0', fontSize: '12px' }}>Dear Sir / Madam,</div>
+                  <div style={{ margin: '0 0 6px 0', fontSize: '12px', fontWeight: 'bold', color: '#0f4c81' }}>Greeting From FLY TO WAY TRAVEL & TOURS</div>
+                  <div style={{ margin: 0, fontSize: '11.5px', color: '#1e293b' }}>
+                    We are pleased to confirm the following reservation on a <strong style={{ color: '#ef4444', textTransform: 'uppercase' }}>{voucherData.status}</strong> basis.
                   </div>
-                )}
-              </div>
+                </div>
 
-              {/* Client, Hotel, Guest horizontal details block */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px', borderTop: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '12px 0' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Client</span>
-                  <span style={{ margin: '0 8px' }}>:</span>
-                  <span style={{ color: '#000000', textTransform: 'uppercase' }}>{voucherData.clientName || 'FLY TO WAY T&T'}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Hotel</span>
-                  <span style={{ margin: '0 8px' }}>:</span>
-                  <span style={{ color: '#000000', textTransform: 'uppercase' }}>{voucherData.stays[0]?.hotelName || 'HADAYA TOWER'}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Guest Name</span>
-                  <span style={{ margin: '0 8px' }}>:</span>
-                  <span style={{ color: '#000000', fontWeight: 'bold', textTransform: 'uppercase' }}>{voucherData.guestName || 'RIZWAN KHAN'}</span>
+                {/* Status and Generated details box */}
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '8px 12px', fontSize: '10.5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', gap: '4px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#0f4c81', width: '90px' }}>☑ Booking Status:</span>
+                    <span style={{ fontWeight: 'bold', color: '#ef4444', textTransform: 'uppercase' }}>{voucherData.status}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#0f4c81', width: '90px' }}>📁 Generated Date:</span>
+                    <span>{voucherData.issueDate}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Main stays details grid table */}
-              <div style={{ marginBottom: '20px' }}>
+              {/* Client & Guest Details horizontal list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '15px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
+                <div style={{ display: 'flex' }}>
+                  <span style={{ width: '130px', fontWeight: 'bold', color: '#334155' }}>Client / Company</span>
+                  <span style={{ marginRight: '10px' }}>:</span>
+                  <span style={{ textTransform: 'uppercase', color: '#000000' }}>{voucherData.clientName}</span>
+                </div>
+                <div style={{ display: 'flex' }}>
+                  <span style={{ width: '130px', fontWeight: 'bold', color: '#334155' }}>Guest Name</span>
+                  <span style={{ marginRight: '10px' }}>:</span>
+                  <span style={{ fontWeight: 'bold', textTransform: 'uppercase', color: '#000000' }}>{voucherData.guestName}</span>
+                </div>
+              </div>
+
+              {/* Multiple Stays Table */}
+              <div style={{ marginBottom: '15px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #cbd5e1' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#1e3a8a', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Qty</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Room Type</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>View</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Meal</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Check In</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Check Out</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Nights</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Hotel Conf. #</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Rate</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Total</th>
+                    <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Stay</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>City</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Hotel Name / Category</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Room Type</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>View</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Meal Plan</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check In</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check Out</th>
                     </tr>
                   </thead>
                   <tbody>
                     {voucherData.stays.map((stay, idx) => {
                       const checkInFormatted = stay.checkIn ? stay.checkIn.split('-').reverse().join('/') : '';
                       const checkOutFormatted = stay.checkOut ? stay.checkOut.split('-').reverse().join('/') : '';
+                      
+                      let stars = '';
+                      if (stay.rating) {
+                        const numStars = parseInt(stay.rating) || 0;
+                        stars = '★'.repeat(numStars);
+                      }
+
+                      // Room type rendering: append custom type if specified
+                      let displayRoom = stay.roomType;
+                      if (stay.roomType === 'Custom Room (optional)' && stay.customRoomType) {
+                        displayRoom = stay.customRoomType;
+                      } else if (stay.customRoomType) {
+                        displayRoom = `${stay.roomType} (${stay.customRoomType})`;
+                      }
+
+                      // View rendering: append custom view if specified
+                      let displayView = stay.roomView;
+                      if (stay.roomView === 'Custom View (optional)' && stay.customRoomView) {
+                        displayView = stay.customRoomView;
+                      } else if (stay.customRoomView) {
+                        displayView = `${stay.roomView} (${stay.customRoomView})`;
+                      }
+
                       return (
                         <tr key={idx}>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.qty || 1}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.roomType || 'Quad'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.roomView || 'CV'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.mealPlan || 'R.O'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkInFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkOutFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.totalNights || 0}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase', fontWeight: '700' }}>{stay.hcn || 'ALLOTMENT'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.rate || 0}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>{stay.total || 0}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>Stay {idx + 1}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>{stay.city}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>
+                            <div style={{ fontWeight: 'bold', color: '#0f4c81' }}>{stay.hotelName || 'N/A'}</div>
+                            {stars && <div style={{ color: '#f59e0b', fontSize: '9px', marginTop: '1px' }}>{stars}</div>}
+                          </td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{displayRoom}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{displayView}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold' }}>{stay.mealPlan}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkInFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkOutFormatted}</td>
                         </tr>
                       );
                     })}
-                    {/* Total Summary Row */}
-                    <tr>
-                      <td colSpan={7} style={{ border: 'none' }}></td>
-                      <td colSpan={2} style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>Total</td>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#f8fafc' }}>
-                        SAR {voucherData.stays.reduce((acc, s) => acc + (parseFloat(s.total) || 0), 0)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colSpan={7} style={{ border: 'none' }}></td>
-                      <td colSpan={3} style={{ border: 'none', padding: '4px', textAlign: 'right', fontSize: '9.5px', fontStyle: 'italic', color: '#64748b' }}>
-                        inclusive of all taxes
+                    
+                    {/* Nights Aggregation Bar */}
+                    <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
+                      <td colSpan={8} style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>
+                        TOTAL NIGHTS:{' '}
+                        <span style={{ backgroundColor: '#ffffff', color: '#0f4c81', padding: '2px 8px', borderRadius: '50px', marginLeft: '6px', fontWeight: '900', fontSize: '11px' }}>
+                          {voucherData.stays.reduce((acc, s) => acc + (parseInt(s.totalNights) || 0), 0)}
+                        </span>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* Rate of Exchange and Optional Date section */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <div style={{ fontSize: '12px' }}>
-                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>Rate of Exchange:</span>{' '}
-                  <strong style={{ color: '#ef4444', marginLeft: '6px' }}>{voucherData.rateOfExchange || '77.50'}</strong>
-                </div>
-                {voucherData.optionalDate && (
-                  <div style={{ fontSize: '11px', textAlign: 'right' }}>
-                    <div style={{ color: '#ef4444', fontWeight: 'bold' }}>Optional Date</div>
-                    <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '12px' }}>
-                      {voucherData.optionalDate.split('-').reverse().join('-')}
-                    </div>
+              {/* Multi-column Information boxes */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                
+                {/* Left Card: Hotel Information */}
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', fontWeight: 'bold', fontSize: '11px' }}>
+                    ⓘ HOTEL INFORMATION
                   </div>
-                )}
+                  <div style={{ padding: '8px 10px', fontSize: '11px', lineHeight: '1.4' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <strong>🕒 CHECK IN TIME:</strong>
+                      <span>{voucherData.checkInTime}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <strong>🕒 CHECK OUT TIME:</strong>
+                      <span>{voucherData.checkOutTime}</span>
+                    </div>
+                    <div style={{ borderTop: '1px dashed #cbd5e1', margin: '6px 0' }}></div>
+                    <p style={{ margin: 0, fontSize: '10px', color: '#475569', fontStyle: 'italic' }}>
+                      Early check-in and late check-out are subject to hotel availability.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Card: Contact Details */}
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', fontWeight: 'bold', fontSize: '11px' }}>
+                    📞 CONTACT DETAILS
+                  </div>
+                  <div style={{ padding: '8px 10px', fontSize: '10.5px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {voucherData.makkahContactName && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '14px' }}>🕋</span>
+                        <div>
+                          <strong>Makkah:</strong> {voucherData.makkahContactName}{' '}
+                          <span style={{ color: '#475569', fontSize: '9.5px' }}>({voucherData.makkahContactNo})</span>
+                        </div>
+                      </div>
+                    )}
+                    {voucherData.madinahContactName && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '14px' }}>🕌</span>
+                        <div>
+                          <strong>Madinah:</strong> {voucherData.madinahContactName}{' '}
+                          <span style={{ color: '#475569', fontSize: '9.5px' }}>({voucherData.madinahContactNo})</span>
+                        </div>
+                      </div>
+                    )}
+                    {!voucherData.makkahContactName && !voucherData.madinahContactName && (
+                      <span style={{ color: '#64748b', fontStyle: 'italic' }}>No ground contacts provided.</span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Hotel Details section */}
-              <div style={{ marginBottom: '20px', textAlign: 'left' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11.5px', color: '#1e3a8a', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Hotel Details
+              {/* Remarks Section */}
+              {voucherData.remarks && voucherData.remarks !== 'REMARK / NOTES' && (
+                <div style={{ border: '1px solid #cbd5e1', borderRadius: '4px', padding: '8px 10px', marginBottom: '15px', backgroundColor: '#f8fafc' }}>
+                  <strong>REMARKS / NOTE:</strong>
+                  <div style={{ marginTop: '4px', textTransform: 'uppercase', color: '#1e293b' }}>{voucherData.remarks}</div>
                 </div>
-                <div style={{ fontSize: '11px', color: '#1f2937', whiteSpace: 'pre-line', lineHeight: '1.5' }}>
+              )}
+
+              {/* Sign off regards */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px' }}>
+                <div style={{ fontSize: '10.5px', color: '#475569' }}>
+                  Thank you for booking with us!
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ color: '#475569', fontSize: '11px' }}>Regards,</div>
+                  <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#ef4444', textTransform: 'uppercase', margin: '2px 0' }}>
+                    {voucherData.authorizedPerson || 'RESERVATION'}
+                  </div>
+                  <div style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#000000', letterSpacing: '0.5px' }}>
+                    RESERVATION
+                  </div>
+                </div>
+              </div>
+
+              {/* Important editable note block */}
+              <div style={{ border: '1px solid #93c5fd', borderRadius: '4px', padding: '10px 12px', display: 'flex', gap: '8px', backgroundColor: '#eff6ff', marginBottom: '25px' }}>
+                <div style={{ color: '#1e3a8a', fontSize: '15px' }}>⚠️</div>
+                <div style={{ fontSize: '10px', color: '#1e3a8a', lineHeight: '1.4' }}>
+                  <strong style={{ display: 'block', marginBottom: '3px', fontSize: '10.5px' }}>IMPORTANT NOTE</strong>
                   {voucherData.importantNotes}
                 </div>
               </div>
 
-              {/* Highlighted Bank Details header */}
-              <div style={{ backgroundColor: '#fef08a', padding: '4px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', border: '1px solid #eab308', marginBottom: '12px', textTransform: 'uppercase', color: '#1e293b' }}>
-                Bank Details:
-              </div>
-
-              {/* Bank accounts side-by-side grids */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '20px', fontSize: '11.5px', lineHeight: '1.4' }}>
-                {/* Bank Account 1 */}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div><strong>Account Title:</strong> {voucherData.bank1Title}</div>
-                  <div><strong>Bank:</strong> {voucherData.bank1Name}</div>
-                  <div><strong>Account #:</strong> {voucherData.bank1Account}</div>
-                  <div><strong>Branch:</strong> {voucherData.bank1Branch}</div>
-                </div>
-
-                {/* Bank Account 2 */}
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div><strong>Account Title:</strong> {voucherData.bank2Title}</div>
-                  <div><strong>Bank:</strong> {voucherData.bank2Name}</div>
-                  <div><strong>Account #:</strong> {voucherData.bank2Account}</div>
-                  <div><strong>Branch:</strong> {voucherData.bank2Branch}</div>
-                </div>
-              </div>
-
-              {/* Regards and Reservation Sign off */}
-              <div style={{ textAlign: 'right', marginBottom: '25px' }}>
-                <div style={{ fontSize: '12px', color: '#1f2937' }}>Regards,</div>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444', margin: '2px 0', textTransform: 'uppercase' }}>
-                  {voucherData.regards}
-                </div>
-                <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#000000', textTransform: 'uppercase' }}>
-                  RESERVATION
-                </div>
-              </div>
-
-              {/* Terms and conditions / Disclaimer */}
-              <div style={{ fontSize: '10.5px', color: '#4b5563', lineHeight: '1.4', marginBottom: '40px', borderTop: '1px dashed #cbd5e1', paddingTop: '10px' }}>
-                Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.
-              </div>
-
-              {/* Document footer with coordinates */}
-              <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#475569' }}>
-                <div>Office # 806 Zulekha Trade Center Sharafabad Karachi-Pakistan</div>
-                <div>Tel # +92 21 34129921-22</div>
-                <div>email : info@flytoway.com</div>
+              {/* Footer bar */}
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: '#64748b' }}>
+                <span>📍 {voucherData.officeAddress}</span>
+                <span>📞 {voucherData.phone}</span>
+                <span>✉ {voucherData.email}</span>
               </div>
 
             </div>
@@ -721,7 +856,7 @@ function HotelVoucherGeneratorContent() {
 
 export default function HotelVoucherGenerator() {
   return (
-    <Suspense fallback={<div className="container" style={{ padding: 40, textAlign: 'center' }}>Loading hotel form...</div>}>
+    <Suspense fallback={<div className="container" style={{ padding: 40, textAlign: 'center' }}>Loading hotel voucher sheet...</div>}>
       <HotelVoucherGeneratorContent />
     </Suspense>
   );
