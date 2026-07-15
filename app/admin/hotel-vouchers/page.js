@@ -17,29 +17,43 @@ function HotelVoucherGeneratorContent() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  // Initial Form State
+  // Initial Form State matching uploaded Hadaya Tower PDF defaults
   const [voucherData, setVoucherData] = useState({
     voucherNo: '',
-    status: 'Confirmed',
+    status: 'Tentative',
     issueDate: new Date().toISOString().split('T')[0],
-    clientName: 'Fly To Way Tour Group',
-    guestName: 'MUHAMMAD AHMED',
+    clientName: 'FLY TO WAY T&T',
+    guestName: 'RIZWAN KHAN',
     makkahContact: '+966 50 123 4567 (WhatsApp Available)',
     madinahContact: '+966 50 765 4321 (WhatsApp Available)',
-    importantNotes: 'Standard Check-in time is 16:00 (4 PM) and Check-out is 12:00 (12 PM) noon. Pilgrims must present passport copy upon check-in.',
+    importantNotes: 'RAMZAN BOOKINS ONCE CONFIMRED (NON REFUNABLE/NON CANCELABLE)\nCHECK IN : 18:00 KSA | CHECK OUT : 12:00 KSA',
+    rateOfExchange: '77.50',
+    optionalDate: '2026-02-26',
+    regards: 'MURTUZA',
+    bank1Title: 'Air One Hotels',
+    bank1Name: 'Meezan Bank',
+    bank1Account: '01970109213093',
+    bank1Branch: 'Sharafabad Branch-Karachi',
+    bank2Title: 'Air One Travels',
+    bank2Name: 'Habib Bank Limited',
+    bank2Account: '54497000100203',
+    bank2Branch: 'Sharafabad Branch',
     isMaheen: false,
     stays: [
       {
         city: 'Makkah',
-        hotelName: 'Anjum Hotel Makkah',
-        rating: '5 Star',
-        roomType: 'Double Room',
-        roomView: 'Haram View',
-        mealPlan: 'Bed & Breakfast',
-        checkIn: '2026-09-10',
-        checkOut: '2026-09-15',
-        totalNights: 5,
-        hcn: 'HCN-9008234'
+        hotelName: 'HADAYA TOWER',
+        rating: '4 Star',
+        roomType: 'Quad',
+        roomView: 'CV',
+        mealPlan: 'R.O',
+        checkIn: '2026-03-26',
+        checkOut: '2026-03-30',
+        totalNights: 4,
+        hcn: 'ALLOTMENT',
+        qty: 1,
+        rate: 55,
+        total: 220
       }
     ]
   });
@@ -90,7 +104,12 @@ function HotelVoucherGeneratorContent() {
   // Stay Handlers
   const handleStayChange = (index, field, value) => {
     const updated = [...voucherData.stays];
-    updated[index][field] = value;
+    
+    if (field === 'qty' || field === 'rate' || field === 'total') {
+      updated[index][field] = parseFloat(value) || 0;
+    } else {
+      updated[index][field] = value;
+    }
     
     // Auto-calculate nights if check-in or check-out changes
     if (field === 'checkIn' || field === 'checkOut') {
@@ -98,6 +117,12 @@ function HotelVoucherGeneratorContent() {
       const checkOutVal = field === 'checkOut' ? value : updated[index].checkOut;
       updated[index].totalNights = calculateNights(checkInVal, checkOutVal);
     }
+    
+    // Auto-calculate stay total price (qty * totalNights * rate)
+    const qty = parseFloat(updated[index].qty) || 0;
+    const nights = parseFloat(updated[index].totalNights) || 0;
+    const rate = parseFloat(updated[index].rate) || 0;
+    updated[index].total = qty * nights * rate;
     
     setVoucherData(prev => ({ ...prev, stays: updated }));
   };
@@ -108,16 +133,19 @@ function HotelVoucherGeneratorContent() {
       stays: [
         ...prev.stays,
         {
-          city: 'Madinah',
+          city: 'Makkah',
           hotelName: '',
           rating: '4 Star',
-          roomType: 'Double Room',
-          roomView: 'City View',
-          mealPlan: 'Bed & Breakfast',
+          roomType: 'Quad',
+          roomView: 'CV',
+          mealPlan: 'R.O',
           checkIn: '',
           checkOut: '',
           totalNights: 0,
-          hcn: ''
+          hcn: 'ALLOTMENT',
+          qty: 1,
+          rate: 0,
+          total: 0
         }
       ]
     }));
@@ -161,7 +189,7 @@ function HotelVoucherGeneratorContent() {
       <div className="container">
         
         {/* Navigation */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+        <div className="no-print-bar" style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
           <button onClick={() => router.push('/admin/dashboard')} className="btn btn-outline" style={{ padding: '6px 12px' }}>
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
@@ -170,10 +198,10 @@ function HotelVoucherGeneratorContent() {
         <div className={styles.splitLayout}>
           
           {/* LEFT: Form Panel */}
-          <div className={styles.formCard}>
+          <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
             <div>
-              <h2 style={{ fontSize: 20, fontWeight: 800 }}>Hotel Confirmation Form</h2>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Add guest credentials and hotels. Changes render in real-time.</p>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#035a37' }}>Hotel Confirmation Form</h2>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Add guest credentials, rates, and hotels. Updates render in real-time.</p>
             </div>
 
             {error && <div className={styles.errorBox} style={{ margin: 0 }}>{error}</div>}
@@ -185,7 +213,7 @@ function HotelVoucherGeneratorContent() {
             </div>
             <div className={styles.formGrid2}>
               <div className={styles.formGroup}>
-                <label>Voucher Number</label>
+                <label>Voucher / Serial Number</label>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input
                     type="text"
@@ -203,10 +231,10 @@ function HotelVoucherGeneratorContent() {
                 </div>
               </div>
               <div className={styles.formGroup}>
-                <label>Status</label>
+                <label>Booking Status</label>
                 <select name="status" value={voucherData.status} onChange={handleFieldChange}>
-                  <option value="Confirmed">Confirmed</option>
                   <option value="Tentative">Tentative</option>
+                  <option value="Confirmed">Confirmed</option>
                   <option value="Hold">Hold</option>
                   <option value="Pending">Pending</option>
                   <option value="Cancelled">Cancelled</option>
@@ -214,7 +242,39 @@ function HotelVoucherGeneratorContent() {
               </div>
             </div>
 
-            <div className={styles.formGrid2}>
+            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Rate of Exchange</label>
+                <input
+                  type="text"
+                  name="rateOfExchange"
+                  value={voucherData.rateOfExchange}
+                  onChange={handleFieldChange}
+                  placeholder="e.g. 77.50"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Optional/Clearance Date</label>
+                <input
+                  type="date"
+                  name="optionalDate"
+                  value={voucherData.optionalDate}
+                  onChange={handleFieldChange}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Regards / Officer</label>
+                <input
+                  type="text"
+                  name="regards"
+                  value={voucherData.regards}
+                  onChange={handleFieldChange}
+                  placeholder="e.g. MURTUZA"
+                />
+              </div>
+            </div>
+
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
                 <label>Client Name / Agency</label>
                 <input
@@ -225,67 +285,89 @@ function HotelVoucherGeneratorContent() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Primary Guest Name</label>
+                <label>Guest Name</label>
                 <input
                   type="text"
                   name="guestName"
                   required
-                  placeholder="e.g. MUHAMMAD AHMED"
+                  placeholder="e.g. RIZWAN KHAN"
                   value={voucherData.guestName}
                   onChange={(e) => setVoucherData(prev => ({ ...prev, guestName: e.target.value.toUpperCase() }))}
                 />
               </div>
             </div>
 
-            {/* Ground support contacts */}
+            {/* Bank details customization */}
             <div className={styles.formSectionTitle}>
-              <span>Saudi Ground Contacts</span>
+              <span>Bank Details Customization</span>
             </div>
             <div className={styles.formGrid2}>
-              <div className={styles.formGroup}>
-                <label>Makkah Representative</label>
-                <input
-                  type="text"
-                  name="makkahContact"
-                  value={voucherData.makkahContact}
-                  onChange={handleFieldChange}
-                />
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <strong style={{ fontSize: '12px', color: '#035a37' }}>Bank Account 1 (Left)</strong>
+                <div className={styles.formGroup}>
+                  <label>Account Title</label>
+                  <input type="text" name="bank1Title" value={voucherData.bank1Title} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Bank Name</label>
+                  <input type="text" name="bank1Name" value={voucherData.bank1Name} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Account Number</label>
+                  <input type="text" name="bank1Account" value={voucherData.bank1Account} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Branch</label>
+                  <input type="text" name="bank1Branch" value={voucherData.bank1Branch} onChange={handleFieldChange} />
+                </div>
               </div>
-              <div className={styles.formGroup}>
-                <label>Madinah Representative</label>
-                <input
-                  type="text"
-                  name="madinahContact"
-                  value={voucherData.madinahContact}
-                  onChange={handleFieldChange}
-                />
+
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <strong style={{ fontSize: '12px', color: '#035a37' }}>Bank Account 2 (Right)</strong>
+                <div className={styles.formGroup}>
+                  <label>Account Title</label>
+                  <input type="text" name="bank2Title" value={voucherData.bank2Title} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Bank Name</label>
+                  <input type="text" name="bank2Name" value={voucherData.bank2Name} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Account Number</label>
+                  <input type="text" name="bank2Account" value={voucherData.bank2Account} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Branch</label>
+                  <input type="text" name="bank2Branch" value={voucherData.bank2Branch} onChange={handleFieldChange} />
+                </div>
               </div>
             </div>
 
             {/* General notes */}
-            <div className={styles.formGroup}>
-              <label>Important Notes</label>
+            <div className={styles.formGroup} style={{ marginTop: '10px' }}>
+              <label>Important Notes / Terms</label>
               <textarea
                 name="importantNotes"
                 value={voucherData.importantNotes}
                 onChange={handleFieldChange}
+                rows={4}
               />
             </div>
 
             {/* Dynamic stays */}
             <div className={styles.formSectionTitle}>
-              <span>Stay Details ({voucherData.stays.length})</span>
-              <button type="button" onClick={addStay} className={styles.removeBtn} style={{ color: 'var(--primary)' }}>
-                <Plus size={14} /> Add Stay Section
+              <span>Stay & Pricing Details ({voucherData.stays.length})</span>
+              <button type="button" onClick={addStay} className={styles.removeBtn} style={{ color: '#035a37', display: 'flex', alignItems: 'center', gap: '4px', border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                <Plus size={14} /> Add Segment
               </button>
             </div>
 
             {voucherData.stays.map((stay, index) => (
-              <div key={index} className={styles.repeaterItem}>
+              <div key={index} className={styles.repeaterItem} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <span style={{ fontSize: 13, fontWeight: '700' }}>Stay Segment #{index + 1}</span>
+                  <span style={{ fontSize: 13, fontWeight: '700', color: '#035a37' }}>Stay Segment #{index + 1}</span>
                   {voucherData.stays.length > 1 && (
-                    <button type="button" onClick={() => removeStay(index)} className={styles.removeBtn}>
+                    <button type="button" onClick={() => removeStay(index)} className={styles.removeBtn} style={{ border: 'none', background: 'none', color: '#ef4444', fontWeight: 'bold', cursor: 'pointer' }}>
                       <Trash2 size={12} /> Remove
                     </button>
                   )}
@@ -305,28 +387,19 @@ function HotelVoucherGeneratorContent() {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Anjum Hotel Makkah"
+                      placeholder="e.g. HADAYA TOWER"
                       value={stay.hotelName}
-                      onChange={(e) => handleStayChange(index, 'hotelName', e.target.value)}
+                      onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())}
                     />
                   </div>
                 </div>
 
                 <div className={styles.formGrid3} style={{ marginBottom: 10 }}>
                   <div className={styles.formGroup}>
-                    <label>Hotel Star Rating</label>
-                    <select value={stay.rating} onChange={(e) => handleStayChange(index, 'rating', e.target.value)}>
-                      <option value="5 Star">5 Star</option>
-                      <option value="4 Star">4 Star</option>
-                      <option value="3 Star">3 Star</option>
-                      <option value="Standard">Standard / Economy</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
                     <label>Room Category</label>
                     <input
                       type="text"
-                      placeholder="Double, Triple, Quad"
+                      placeholder="e.g. Quad"
                       value={stay.roomType}
                       onChange={(e) => handleStayChange(index, 'roomType', e.target.value)}
                     />
@@ -335,35 +408,23 @@ function HotelVoucherGeneratorContent() {
                     <label>Room View</label>
                     <input
                       type="text"
-                      placeholder="Haram View, City View"
+                      placeholder="e.g. CV"
                       value={stay.roomView}
                       onChange={(e) => handleStayChange(index, 'roomView', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Meal Plan (Meal)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. R.O"
+                      value={stay.mealPlan}
+                      onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className={styles.formGrid3} style={{ marginBottom: 10 }}>
-                  <div className={styles.formGroup}>
-                    <label>Meal Plan</label>
-                    <select value={stay.mealPlan} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)}>
-                      <option value="Room Only">Room Only (RO)</option>
-                      <option value="Bed & Breakfast">Bed & Breakfast (BB)</option>
-                      <option value="Half Board">Half Board (HB)</option>
-                      <option value="Full Board">Full Board (FB)</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
-                    <label>Hotel Confirmation # (HCN)</label>
-                    <input
-                      type="text"
-                      placeholder="Hotel PNR or Confirmation ID"
-                      value={stay.hcn}
-                      onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGrid3}>
                   <div className={styles.formGroup}>
                     <label>Check-in Date</label>
                     <input
@@ -392,6 +453,46 @@ function HotelVoucherGeneratorContent() {
                     />
                   </div>
                 </div>
+
+                <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Qty (Rooms) *</label>
+                    <input
+                      type="number"
+                      required
+                      value={stay.qty}
+                      onChange={(e) => handleStayChange(index, 'qty', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Rate (SAR per Night) *</label>
+                    <input
+                      type="number"
+                      required
+                      value={stay.rate}
+                      onChange={(e) => handleStayChange(index, 'rate', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Total Price (Auto)</label>
+                    <input
+                      type="number"
+                      readOnly
+                      style={{ backgroundColor: 'var(--bg-tertiary)', fontWeight: 'bold' }}
+                      value={stay.total}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginTop: '10px' }}>
+                  <label>Hotel Conf. # (Hotel Conf. #)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. ALLOTMENT"
+                    value={stay.hcn}
+                    onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())}
+                  />
+                </div>
               </div>
             ))}
 
@@ -400,264 +501,212 @@ function HotelVoucherGeneratorContent() {
               disabled={saving}
               onClick={handleSave}
               className="btn btn-primary"
-              style={{ width: '100%', padding: '12px', marginTop: 10 }}
+              style={{ width: '100%', padding: '12px', marginTop: 10, backgroundColor: '#035a37', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
-              <Save size={16} /> {saving ? 'Saving to Database...' : 'Save Hotel Voucher'}
+              <Save size={16} /> {saving ? 'Saving to Database...' : 'Save Hotel Confirmation'}
             </button>
           </div>
 
           {/* RIGHT: Live print layout */}
-          {/* RIGHT: Live print layout */}
           <div className={styles.previewPanel}>
-            <div className={styles.previewToolbar}>
-              <span className={styles.previewToolbarTitle}>VOUCHER PREVIEW (A4 PRINT VIEW)</span>
-              <button onClick={() => window.print()} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: 13 }}>
-                <Printer size={14} /> Print / Export PDF
+            <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>HOTEL CONFIRMATION PREVIEW (A4 PRINT SHEET)</span>
+              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
+                <Printer size={14} /> Print / Save PDF
               </button>
             </div>
 
             {/* Document sheet */}
-            <div className={styles.voucherSheet} style={{ fontFamily: 'Arial, sans-serif', padding: '30px', fontSize: '11px', color: '#1f2937' }}>
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '40px 30px', fontSize: '12px', color: '#000000', lineHeight: '1.4', textSnap: 'none' }}>
               
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f4c81', paddingBottom: '12px', marginBottom: '15px' }}>
+              {/* PDF Document Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '70px', width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '65px', width: 'auto', objectFit: 'contain' }} />
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>FLY TO WAY TRAVEL & TOURS</h1>
-                  <h2 style={{ margin: '4px 0 0 0', fontSize: '12px', fontWeight: '700', color: '#0f4c81', letterSpacing: '1px' }}>HOTEL BOOKING CONFIRMATION VOUCHER</h2>
-                </div>
-              </div>
-
-              {/* Greeting & Booking Status Box */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '20px', marginBottom: '20px', alignItems: 'start' }}>
-                <div>
-                  <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#374151' }}>Dear Sir / Madam,</p>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 'bold', color: '#1f2937' }}>Greeting From FLY TO WAY TRAVEL & TOURS</p>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#4b5563', lineHeight: '1.4' }}>
-                    We are pleased to confirm the following reservation on a <strong style={{ color: '#0f4c81' }}>{voucherData.status.toUpperCase()}</strong> basis.
-                  </p>
-                </div>
-                
-                {/* Status Box */}
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 14px', fontSize: '11px' }}>
-                  <div style={{ fontWeight: 'bold', color: '#0f4c81', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    Hotel Booking Confirmation
+                  <div style={{ color: '#ef4444', fontWeight: '900', fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase', lineHeight: '1' }}>
+                    {voucherData.status.toUpperCase()}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px', gap: '4px' }}>
-                    <span style={{ fontWeight: '600' }}>☑ Booking Status:</span>
-                    <span style={{ 
-                      backgroundColor: voucherData.status.toLowerCase() === 'confirmed' ? '#10b981' : '#ef4444', 
-                      color: '#ffffff', 
-                      padding: '3px 8px', 
-                      borderRadius: '4px', 
-                      fontWeight: 'bold', 
-                      fontSize: '10px',
-                      textTransform: 'uppercase'
-                    }}>
-                      {voucherData.status}
-                    </span>
+                  <div style={{ color: '#ef4444', fontWeight: '900', fontSize: '28px', lineHeight: '1.1', marginBottom: '4px' }}>
+                    {voucherData.voucherNo ? voucherData.voucherNo.replace(/[^\d]/g, '').slice(-4) || '8168' : '8168'}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ fontWeight: '600' }}>📁 Generated:</span>
-                    <span>{voucherData.issueDate ? voucherData.issueDate.split('-').reverse().join('/') : new Date().toLocaleDateString('en-GB')}</span>
+                  <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a' }}>Hotel Booking Confirmation</h1>
+                  <div style={{ fontSize: '13px', margin: '4px 0' }}>
+                    <strong>Booking Status:</strong> <span style={{ color: '#ef4444', fontWeight: 'bold' }}>{voucherData.status}</span>
+                  </div>
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', marginTop: '6px', textTransform: 'uppercase', lineHeight: '1.2' }}>
+                    {voucherData.stays[0]?.hotelName || 'HADAYA TOWER'}
+                  </div>
+                  <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase' }}>
+                    {voucherData.stays[0]?.city || 'MAKKAH'}
                   </div>
                 </div>
               </div>
 
-              {/* Client & Guest Info */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px', borderBottom: '1px solid #cbd5e1', paddingBottom: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ width: '130px', color: '#4b5563', fontWeight: 'bold', fontSize: '11px' }}>Client / Company</span>
-                  <span style={{ marginRight: '8px', color: '#4b5563' }}>:</span>
-                  <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '11px' }}>FLY TO WAY</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ width: '130px', color: '#4b5563', fontWeight: 'bold', fontSize: '11px' }}>Guest Name</span>
-                  <span style={{ marginRight: '8px', color: '#4b5563' }}>:</span>
-                  <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '11px' }}>{voucherData.guestName ? voucherData.guestName.toUpperCase() : 'N/A'}</span>
-                </div>
-              </div>
-
-              {/* Stays Table */}
+              {/* Salutations and Greeting */}
               <div style={{ marginBottom: '20px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px' }}>
+                <div style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Dear Sir :</div>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#1e3a8a', marginBottom: '6px' }}>
+                  Greeting From <span style={{ color: '#1e3a8a' }}>Fly To Way Travels & Tours</span>.
+                </div>
+                <div style={{ fontSize: '12px', color: '#1f2937', marginBottom: '4px' }}>
+                  First of All, We would like to take this opportunity to welcome you at <span style={{ fontWeight: 'bold' }}>Fly To Way Travels & Tours</span>.
+                </div>
+                <div style={{ fontSize: '12px', color: '#1f2937', marginBottom: '4px' }}>
+                  We are pleased to confirm the following reservation on a <strong style={{ textTransform: 'uppercase' }}>{voucherData.status}</strong> basis.
+                </div>
+                {voucherData.optionalDate && (
+                  <div style={{ fontSize: '12px', color: '#1f2937' }}>
+                    Please clear the amount before: <strong style={{ color: '#ef4444' }}>{voucherData.optionalDate.split('-').reverse().join('-')}</strong>
+                  </div>
+                )}
+              </div>
+
+              {/* Client, Hotel, Guest horizontal details block */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px', borderTop: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '12px 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Client</span>
+                  <span style={{ margin: '0 8px' }}>:</span>
+                  <span style={{ color: '#000000', textTransform: 'uppercase' }}>{voucherData.clientName || 'FLY TO WAY T&T'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Hotel</span>
+                  <span style={{ margin: '0 8px' }}>:</span>
+                  <span style={{ color: '#000000', textTransform: 'uppercase' }}>{voucherData.stays[0]?.hotelName || 'HADAYA TOWER'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ width: '120px', fontWeight: 'bold', color: '#1f2937' }}>Guest Name</span>
+                  <span style={{ margin: '0 8px' }}>:</span>
+                  <span style={{ color: '#000000', fontWeight: 'bold', textTransform: 'uppercase' }}>{voucherData.guestName || 'RIZWAN KHAN'}</span>
+                </div>
+              </div>
+
+              {/* Main stays details grid table */}
+              <div style={{ marginBottom: '20px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #cbd5e1' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Stay</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>City</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Hotel Name / Category</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Room Type</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>View</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Meal Plan</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check In</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check Out</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>Nights</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700', backgroundColor: '#0f4c81', color: '#ffffff' }}>HCN #</th>
+                    <tr style={{ backgroundColor: '#1e3a8a', color: '#ffffff' }}>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Qty</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Room Type</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>View</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Meal</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Check In</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Check Out</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Nights</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Hotel Conf. #</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Rate</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#1e3a8a', color: '#ffffff' }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {voucherData.stays.map((stay, index) => {
+                    {voucherData.stays.map((stay, idx) => {
                       const checkInFormatted = stay.checkIn ? stay.checkIn.split('-').reverse().join('/') : '';
                       const checkOutFormatted = stay.checkOut ? stay.checkOut.split('-').reverse().join('/') : '';
-                      
-                      let stars = '';
-                      if (stay.rating) {
-                        const numStars = parseInt(stay.rating) || 0;
-                        stars = '★'.repeat(numStars);
-                      }
-                      
-                      let mealPlanCode = stay.mealPlan || '';
-                      if (mealPlanCode.toLowerCase().includes('room only')) mealPlanCode = 'RO';
-                      else if (mealPlanCode.toLowerCase().includes('breakfast')) mealPlanCode = 'BB';
-                      else if (mealPlanCode.toLowerCase().includes('half board')) mealPlanCode = 'HB';
-                      else if (mealPlanCode.toLowerCase().includes('full board')) mealPlanCode = 'FB';
-
                       return (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>Stay {index + 1}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>{stay.city.toUpperCase()}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'left' }}>
-                            <div style={{ fontWeight: 'bold', color: '#0f4c81' }}>{stay.hotelName.toUpperCase()}</div>
-                            {stars && <div style={{ color: '#f59e0b', fontSize: '10px', marginTop: '2px', letterSpacing: '1px' }}>{stars}</div>}
-                          </td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.roomType}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.roomView}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>{mealPlanCode}</td>
+                        <tr key={idx}>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.qty || 1}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.roomType || 'Quad'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.roomView || 'CV'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase' }}>{stay.mealPlan || 'R.O'}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkInFormatted}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkOutFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '700' }}>{stay.totalNights}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontFamily: 'monospace' }}>{stay.hcn || ''}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.totalNights || 0}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', textTransform: 'uppercase', fontWeight: '700' }}>{stay.hcn || 'ALLOTMENT'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{stay.rate || 0}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>{stay.total || 0}</td>
                         </tr>
                       );
                     })}
-                    
-                    {/* Total Nights Footer */}
-                    <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
-                      <td colSpan={10} style={{ border: '1px solid #cbd5e1', padding: '7px 10px', textAlign: 'center', fontWeight: '700', letterSpacing: '0.5px' }}>
-                        TOTAL NIGHTS: <span style={{ backgroundColor: '#ffffff', color: '#1f2937', padding: '2px 8px', borderRadius: '4px', marginLeft: '6px', fontSize: '11px', fontWeight: '800' }}>{voucherData.stays.reduce((acc, stay) => acc + parseInt(stay.totalNights || 0), 0)}</span>
+                    {/* Total Summary Row */}
+                    <tr>
+                      <td colSpan={7} style={{ border: 'none' }}></td>
+                      <td colSpan={2} style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>Total</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#f8fafc' }}>
+                        SAR {voucherData.stays.reduce((acc, s) => acc + (parseFloat(s.total) || 0), 0)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan={7} style={{ border: 'none' }}></td>
+                      <td colSpan={3} style={{ border: 'none', padding: '4px', textAlign: 'right', fontSize: '9.5px', fontStyle: 'italic', color: '#64748b' }}>
+                        inclusive of all taxes
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* Two Column Info Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                
-                {/* Left Card: Hotel Information */}
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
-                  <div style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '8px 12px', fontWeight: 'bold', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>ⓘ</span> HOTEL INFORMATION
-                  </div>
-                  <div style={{ padding: '12px 14px', fontSize: '11px', lineHeight: '1.5', color: '#374151' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                      <strong>🕒 CHECK IN TIME:</strong>
-                      <span>16:00</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <strong>🕒 CHECK OUT TIME:</strong>
-                      <span>14:00</span>
-                    </div>
-                    <div style={{ borderTop: '1px dashed #cbd5e1', margin: '8px 0' }}></div>
-                    <p style={{ margin: 0, color: '#4b5563', fontSize: '10.5px', fontStyle: 'italic' }}>
-                      Early check-in and late check-out are subject to hotel availability.
-                    </p>
-                  </div>
+              {/* Rate of Exchange and Optional Date section */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ fontSize: '12px' }}>
+                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>Rate of Exchange:</span>{' '}
+                  <strong style={{ color: '#ef4444', marginLeft: '6px' }}>{voucherData.rateOfExchange || '77.50'}</strong>
                 </div>
-
-                {/* Right Card: Contact Details */}
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
-                  <div style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '8px 12px', fontWeight: 'bold', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>📞</span> CONTACT DETAILS
-                  </div>
-                  <div style={{ padding: '12px 14px', fontSize: '11px', lineHeight: '1.4', color: '#374151', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    
-                    {/* Makkah Contact */}
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '20px', lineHeight: '1' }}>🕋</span>
-                      <div>
-                        <div style={{ fontWeight: 'bold', color: '#0f4c81', fontSize: '11px', marginBottom: '2px' }}>Makkah Hotel Contact</div>
-                        <div>Contact Name: {(() => {
-                          const contact = voucherData.makkahContact || '';
-                          const phoneMatch = contact.match(/[\+\d\s\-]{7,}/);
-                          if (phoneMatch) {
-                            const phone = phoneMatch[0].trim();
-                            let name = contact.replace(phone, '').replace(/[\(\)\:\-\,]/g, '').trim();
-                            name = name.replace(/WhatsApp|Available|help|desk/gi, '').trim();
-                            return name || 'AMJAD';
-                          }
-                          return 'AMJAD';
-                        })()}</div>
-                        <div style={{ fontSize: '10px', color: '#4b5563', marginTop: '2px', display: 'flex', gap: '4px', alignItems: 'center' }}>
-                          <span>📱 💬</span> Mobile & WhatsApp: {(() => {
-                            const contact = voucherData.makkahContact || '';
-                            const phoneMatch = contact.match(/[\+\d\s\-]{7,}/);
-                            return phoneMatch ? phoneMatch[0].trim() : contact || '00966123456789';
-                          })()}
-                        </div>
-                      </div>
+                {voucherData.optionalDate && (
+                  <div style={{ fontSize: '11px', textAlign: 'right' }}>
+                    <div style={{ color: '#ef4444', fontWeight: 'bold' }}>Optional Date</div>
+                    <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '12px' }}>
+                      {voucherData.optionalDate.split('-').reverse().join('-')}
                     </div>
-
-                    {/* Madinah Contact */}
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '20px', lineHeight: '1' }}>🕌</span>
-                      <div>
-                        <div style={{ fontWeight: 'bold', color: '#0f4c81', fontSize: '11px', marginBottom: '2px' }}>Madinah Hotel Contact</div>
-                        <div>Contact Name: {(() => {
-                          const contact = voucherData.madinahContact || '';
-                          const phoneMatch = contact.match(/[\+\d\s\-]{7,}/);
-                          if (phoneMatch) {
-                            const phone = phoneMatch[0].trim();
-                            let name = contact.replace(phone, '').replace(/[\(\)\:\-\,]/g, '').trim();
-                            name = name.replace(/WhatsApp|Available|help|desk/gi, '').trim();
-                            return name || 'ANWER';
-                          }
-                          return 'ANWER';
-                        })()}</div>
-                        <div style={{ fontSize: '10px', color: '#4b5563', marginTop: '2px', display: 'flex', gap: '4px', alignItems: 'center' }}>
-                          <span>📱 💬</span> Mobile & WhatsApp: {(() => {
-                            const contact = voucherData.madinahContact || '';
-                            const phoneMatch = contact.match(/[\+\d\s\-]{7,}/);
-                            return phoneMatch ? phoneMatch[0].trim() : contact || '0096614785968';
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-
                   </div>
-                </div>
-
+                )}
               </div>
 
-              {/* Regards Section */}
-              <div style={{ marginBottom: '20px' }}>
-                <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: '#4b5563' }}>Regards,</p>
-                <p style={{ margin: '0 0 2px 0', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '20px', fontWeight: 'bold', color: '#0f4c81', letterSpacing: '1px' }}>SHUJA CH</p>
-                <p style={{ margin: 0, fontSize: '10px', fontWeight: 'bold', color: '#ef4444', letterSpacing: '0.5px' }}>RESERVATION</p>
-              </div>
-
-              {/* Important Note Box */}
-              <div style={{ backgroundColor: '#f0f7ff', border: '1px solid #93c5fd', borderRadius: '6px', padding: '12px 14px', display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ color: '#eab308' }}><Bell size={16} style={{ fill: '#eab308' }} /></div>
-                <div style={{ fontSize: '10.5px', lineHeight: '1.4', color: '#1e3a8a' }}>
-                  <strong style={{ color: '#1e3a8a', display: 'block', marginBottom: '4px', fontSize: '11px' }}>IMPORTANT NOTE</strong>
-                  Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.
+              {/* Hotel Details section */}
+              <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '11.5px', color: '#1e3a8a', marginBottom: '6px', textTransform: 'uppercase' }}>
+                  Hotel Details
+                </div>
+                <div style={{ fontSize: '11px', color: '#1f2937', whiteSpace: 'pre-line', lineHeight: '1.5' }}>
+                  {voucherData.importantNotes}
                 </div>
               </div>
 
-              {/* Full Width Footer Bar */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#0f4c81', color: '#ffffff', padding: '8px 16px', fontSize: '10px', borderRadius: '4px', fontWeight: '500' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>•</span> College Road, Lahore - Pakistan
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>📱</span> +923082122760
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>✉</span> info@flytoway.com
-                </span>
+              {/* Highlighted Bank Details header */}
+              <div style={{ backgroundColor: '#fef08a', padding: '4px', textAlign: 'center', fontWeight: 'bold', fontSize: '12px', border: '1px solid #eab308', marginBottom: '12px', textTransform: 'uppercase', color: '#1e293b' }}>
+                Bank Details:
+              </div>
+
+              {/* Bank accounts side-by-side grids */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '20px', fontSize: '11.5px', lineHeight: '1.4' }}>
+                {/* Bank Account 1 */}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div><strong>Account Title:</strong> {voucherData.bank1Title}</div>
+                  <div><strong>Bank:</strong> {voucherData.bank1Name}</div>
+                  <div><strong>Account #:</strong> {voucherData.bank1Account}</div>
+                  <div><strong>Branch:</strong> {voucherData.bank1Branch}</div>
+                </div>
+
+                {/* Bank Account 2 */}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div><strong>Account Title:</strong> {voucherData.bank2Title}</div>
+                  <div><strong>Bank:</strong> {voucherData.bank2Name}</div>
+                  <div><strong>Account #:</strong> {voucherData.bank2Account}</div>
+                  <div><strong>Branch:</strong> {voucherData.bank2Branch}</div>
+                </div>
+              </div>
+
+              {/* Regards and Reservation Sign off */}
+              <div style={{ textAlign: 'right', marginBottom: '25px' }}>
+                <div style={{ fontSize: '12px', color: '#1f2937' }}>Regards,</div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444', margin: '2px 0', textTransform: 'uppercase' }}>
+                  {voucherData.regards}
+                </div>
+                <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#000000', textTransform: 'uppercase' }}>
+                  RESERVATION
+                </div>
+              </div>
+
+              {/* Terms and conditions / Disclaimer */}
+              <div style={{ fontSize: '10.5px', color: '#4b5563', lineHeight: '1.4', marginBottom: '40px', borderTop: '1px dashed #cbd5e1', paddingTop: '10px' }}>
+                Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.
+              </div>
+
+              {/* Document footer with coordinates */}
+              <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#475569' }}>
+                <div>Office # 806 Zulekha Trade Center Sharafabad Karachi-Pakistan</div>
+                <div>Tel # +92 21 34129921-22</div>
+                <div>email : info@flytoway.com</div>
               </div>
 
             </div>
