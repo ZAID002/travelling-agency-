@@ -153,18 +153,18 @@
 }
 
 .heroActions :global(.btn-outline) {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  border-color: var(--primary);
+  color: var(--primary);
   background-color: transparent;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .heroActions :global(.btn-outline):hover {
-  background-color: #ffffff;
-  color: #0f172a;
-  border-color: #ffffff;
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.3);
 }
 
 /* Services / Features Grid */
