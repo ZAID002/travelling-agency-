@@ -38,7 +38,7 @@ function InvoiceGeneratorContent() {
     invoiceNo: '',
     status: 'Tentative',
     title: 'Hotel Booking Confirmation',
-    companyLogo: 'air1',
+    companyLogo: 'flytoway',
     clientName: 'FLY TO WAY T&T',
     guestName: 'RIZWAN KHAN',
     hotelName: 'HADAYA TOWER',
@@ -51,9 +51,9 @@ function InvoiceGeneratorContent() {
     checkOutTime: '12:00 KSA',
     authorizedPerson: 'MURTUZA',
     remarks: '',
-    officeAddress: 'Office # 806 Zulekha Trade Center Sharafabad Karachi-Pakistan',
-    phone: '+92 21 34129921-22',
-    email: 'reservation@airone.com.pk',
+    officeAddress: 'College Road, Lahore - Pakistan',
+    phone: '+923082122760',
+    email: 'info@flytoway.com',
     bankDetails: defaultBanks,
     items: [
       {
