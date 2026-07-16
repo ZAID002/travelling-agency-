@@ -1,0 +1,963 @@
+'use client';
+
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { 
+  Plane, Plus, Trash2, Printer, Save, RefreshCw, 
+  ArrowLeft, Search, User, FileText, Calendar, Landmark, Info
+} from 'lucide-react';
+import styles from '../generator.module.css';
+
+function UmrahVoucherGeneratorContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const editVoucherNo = searchParams.get('edit');
+
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  // Initial state based on Maheen Umrah Voucher PDF layout
+  const initialVoucherState = {
+    voucherNo: '',
+    status: 'Definite',
+    issueDate: new Date().toLocaleDateString('en-GB'),
+    packageCode: 'PACKAGE_001',
+    paxNo: '5 (A:5, C:0, I:0)',
+    bedsNo: '5',
+    familyHead: 'MUHAMMAD RASHEED HAFIZ LUQMAN',
+    ubNo: 'UB-101965',
+    mNo: '',
+    isMaheen: true,
+    
+    // Flight departures and arrivals
+    flights: [
+      { type: 'DEPARTURE', flightNo: 'PA-170', sector: 'KHI-JED', depDate: '05-JUL 03:30', arrDate: '05-JUL 06:05' },
+      { type: 'ARRIVAL', flightNo: 'PA-171', sector: 'JED-KHI', depDate: '24-JUL 07:15', arrDate: '24-JUL 13:45' }
+    ],
+
+    // Stays list
+    stays: [
+      {
+        city: 'Makkah',
+        hotelName: 'SHAZA WASSAM 3/ 4/ WAHDAT AL KHAIR/ EQUAL',
+        view: 'Standard',
+        mealPlan: 'RO',
+        hcn: '',
+        roomType: 'Sharing (Family)',
+        checkIn: '2026-07-05',
+        checkOut: '2026-07-11',
+        totalNights: 6
+      },
+      {
+        city: 'Medinah',
+        hotelName: 'WAQAR INTERNATIONAL/ EQUAL',
+        view: 'Standard',
+        mealPlan: 'RO',
+        hcn: '',
+        roomType: 'Sharing (Family)',
+        checkIn: '2026-07-11',
+        checkOut: '2026-07-19',
+        totalNights: 8
+      },
+      {
+        city: 'Makkah',
+        hotelName: 'SHAZA WASSAM 3/ 4/ WAHDAT AL KHAIR/ EQUAL',
+        view: 'Standard',
+        mealPlan: 'RO',
+        hcn: '',
+        roomType: 'Sharing (Gender)',
+        checkIn: '2026-07-19',
+        checkOut: '2026-07-24',
+        totalNights: 5
+      }
+    ],
+
+    // Transport Details
+    transportTravelDate: '',
+    transportTransporter: 'Company Transport',
+    transportType: 'Economy By Bus',
+    transportDesc: 'Round Trip (Jed-Mak-Med-Mak-Jed)',
+
+    // Mutamers list
+    mutamers: [
+      { passportNo: 'LP9848311', name: 'MUHAMMAD RASHEED HAFIZ LUQMAN', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
+      { passportNo: 'TR1079761', name: 'ABDUL RASHEED GHULAM QADIR', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
+      { passportNo: 'UC0008231', name: 'MAAH NOOR MUHAMMAD BASHIR', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
+      { passportNo: 'VJ3121761', name: 'SUGHRAN BIBI ABDUL RASHEED', gender: 'F', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
+      { passportNo: 'NH4915361', name: 'MUSARRAT KOUSAR MUHAMMAD BASHIR', gender: 'F', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' }
+    ],
+
+    // Emergency Contacts
+    specialInstructions: 'hijaz muqadas pax',
+    makkahContactName: 'Muhammad Waqas',
+    makkahContactNo: '+92-347-9416446',
+    madinahContactName: 'Mehmood',
+    madinahContactNo: '+966-59-863-8330',
+
+    // Company and print config
+    companyName: 'FLY TO WAY TRAVEL & TOURS',
+    officeAddress: 'College Road, Lahore - Pakistan',
+    phone: '+923082122760',
+    email: 'info@flytoway.com',
+    authorizedPerson: 'SHUJA CH',
+    importantNotes: ''
+  };
+
+  const [voucherData, setVoucherData] = useState(initialVoucherState);
+
+  // Search local database states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  // Fetch details if editing
+  useEffect(() => {
+    if (editVoucherNo) {
+      const fetchVoucher = async () => {
+        try {
+          const res = await fetch(`/api/vouchers/maheen?search=${editVoucherNo}`);
+          const data = await res.json();
+          if (res.ok && data.length > 0) {
+            const exactMatch = data.find(v => v.voucherNo === editVoucherNo);
+            if (exactMatch) {
+              setVoucherData(exactMatch);
+            }
+          }
+        } catch (err) {
+          setError('Failed to fetch the voucher.');
+        }
+      };
+      fetchVoucher();
+    } else {
+      generateRandomVoucher();
+    }
+  }, [editVoucherNo]);
+
+  const generateRandomVoucher = () => {
+    const rand = Math.floor(100000 + Math.random() * 900000);
+    setVoucherData(prev => ({ ...prev, voucherNo: `M-${rand}` }));
+  };
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    setVoucherData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFieldChangeUpper = (e) => {
+    const { name, value } = e.target;
+    setVoucherData(prev => ({ ...prev, [name]: value.toUpperCase() }));
+  };
+
+  // Helper to compute nights
+  const calculateNights = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return 0;
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return isNaN(diffDays) ? 0 : diffDays;
+  };
+
+  // Stay Handlers
+  const handleStayChange = (index, field, value) => {
+    const updated = [...voucherData.stays];
+    updated[index][field] = value;
+    
+    // Auto-calculate nights if check-in or check-out changes
+    if (field === 'checkIn' || field === 'checkOut') {
+      const checkInVal = field === 'checkIn' ? value : updated[index].checkIn;
+      const checkOutVal = field === 'checkOut' ? value : updated[index].checkOut;
+      updated[index].totalNights = calculateNights(checkInVal, checkOutVal);
+    }
+    
+    setVoucherData(prev => ({ ...prev, stays: updated }));
+  };
+
+  const addStay = () => {
+    setVoucherData(prev => ({
+      ...prev,
+      stays: [
+        ...prev.stays,
+        {
+          city: 'Makkah',
+          hotelName: '',
+          view: 'Standard',
+          mealPlan: 'RO',
+          hcn: '',
+          roomType: 'Sharing (Family)',
+          checkIn: '',
+          checkOut: '',
+          totalNights: 0
+        }
+      ]
+    }));
+  };
+
+  const removeStay = (index) => {
+    if (voucherData.stays.length === 1) return;
+    const updated = voucherData.stays.filter((_, i) => i !== index);
+    setVoucherData(prev => ({ ...prev, stays: updated }));
+  };
+
+  // Flight Handlers
+  const handleFlightChange = (index, field, value) => {
+    const updated = [...voucherData.flights];
+    updated[index][field] = value.toUpperCase();
+    setVoucherData(prev => ({ ...prev, flights: updated }));
+  };
+
+  // Mutamers Handlers
+  const handleMutamerChange = (index, field, value) => {
+    const updated = [...voucherData.mutamers];
+    updated[index][field] = field === 'passportNo' || field === 'pnr' || field === 'groupNo' || field === 'visaNo'
+      ? value.toUpperCase()
+      : value;
+    setVoucherData(prev => ({ ...prev, mutamers: updated }));
+  };
+
+  const addMutamer = () => {
+    setVoucherData(prev => ({
+      ...prev,
+      mutamers: [
+        ...prev.mutamers,
+        { passportNo: '', name: '', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '', visaNo: '', pnr: '' }
+      ]
+    }));
+  };
+
+  const removeMutamer = (index) => {
+    if (voucherData.mutamers.length === 1) return;
+    const updated = voucherData.mutamers.filter((_, i) => i !== index);
+    setVoucherData(prev => ({ ...prev, mutamers: updated }));
+  };
+
+  // Reset form to defaults
+  const handleReset = () => {
+    const rand = Math.floor(100000 + Math.random() * 900000);
+    setVoucherData({
+      ...initialVoucherState,
+      voucherNo: `M-${rand}`
+    });
+    setSearchResults([]);
+    setSearchQuery('');
+  };
+
+  // Search Vouchers
+  const executeSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    try {
+      const res = await fetch(`/api/vouchers/maheen?search=${searchQuery}`);
+      const data = await res.json();
+      if (res.ok) {
+        setSearchResults(data);
+      }
+    } catch (err) {
+      console.error('Search failed', err);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // Save to DB
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveSuccess(false);
+    setError('');
+
+    try {
+      const res = await fetch('/api/vouchers/maheen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(voucherData)
+      });
+
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        const errData = await res.json();
+        setError(errData.error || 'Failed to save Umrah Voucher.');
+      }
+    } catch (err) {
+      setError('Connection failure.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .previewToolbar, .previewToolbar * {
+            display: none !important;
+          }
+          body, html {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .previewPanel {
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          #voucher-print {
+            width: 100% !important;
+            max-width: 100% !important;
+            border: none !important;
+            padding: 10px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            box-sizing: border-box;
+          }
+          .urdu-instructions {
+            page-break-inside: avoid;
+          }
+        }
+      `}} />
+      <div className="container">
+        
+        {/* Navigation & Controls header */}
+        <div className="no-print-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <button onClick={() => router.push('/admin/dashboard')} className="btn btn-outline" style={{ padding: '6px 12px' }}>
+            <ArrowLeft size={16} /> Back to Dashboard
+          </button>
+          
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={handleReset} className="btn btn-outline" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+              Reset All
+            </button>
+            <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Voucher'}
+            </button>
+            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <Printer size={14} style={{ marginRight: 6 }} /> Generate Voucher PDF
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.splitLayout}>
+          
+          {/* LEFT: Form Panel */}
+          <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+            
+            {/* Search Saved Vouchers */}
+            <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
+              <strong style={{ display: 'block', fontSize: '13px', marginBottom: '8px', color: '#0a2e5c' }}>Search Saved Umrah Vouchers</strong>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Voucher #, Family Head, Package, Passport or Pilgrim Name"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ flex: 1, fontSize: '12px', padding: '8px' }}
+                />
+                <button onClick={executeSearch} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0a2e5c', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                  <Search size={14} /> Search
+                </button>
+              </div>
+              
+              {searchResults.length > 0 && (
+                <div style={{ marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '8px', maxHeight: '180px', overflowY: 'auto' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>Search Results:</span>
+                  {searchResults.map((v) => (
+                    <div
+                      key={v._id}
+                      onClick={() => {
+                        setVoucherData(v);
+                        setSearchResults([]);
+                      }}
+                      style={{ padding: '6px 8px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', fontSize: '12px', display: 'flex', justifyContent: 'space-between', hover: { backgroundColor: '#f1f5f9' } }}
+                    >
+                      <span style={{ fontWeight: 'bold', color: '#0a2e5c' }}>{v.voucherNo}</span>
+                      <span style={{ color: '#1e293b' }}>{v.familyHead}</span>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>{v.packageCode}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {error && <div className={styles.errorBox} style={{ margin: '0 0 15px 0' }}>{error}</div>}
+            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center', marginBottom: 15 }}>Voucher saved successfully in database!</div>}
+
+            {/* 1. Voucher Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px' }}>
+              <span>1. Voucher General Info</span>
+            </div>
+            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Voucher / Booking No.</label>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input
+                    type="text"
+                    name="voucherNo"
+                    required
+                    value={voucherData.voucherNo}
+                    onChange={handleFieldChange}
+                  />
+                  <button type="button" onClick={generateRandomVoucher} className="btn btn-outline" style={{ padding: 8 }}>
+                    <RefreshCw size={12} />
+                  </button>
+                </div>
+              </div>
+              <div className={styles.formGroup}>
+                <label>Voucher Date</label>
+                <input type="text" name="issueDate" value={voucherData.issueDate} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Package Code</label>
+                <input type="text" name="packageCode" value={voucherData.packageCode} onChange={handleFieldChangeUpper} />
+              </div>
+            </div>
+            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>PAX Summary (e.g. 5 (A:5,C:0,I:0))</label>
+                <input type="text" name="paxNo" value={voucherData.paxNo} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Beds count</label>
+                <input type="text" name="bedsNo" value={voucherData.bedsNo} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Booking Status</label>
+                <select name="status" value={voucherData.status} onChange={handleFieldChange}>
+                  <option value="Definite">Definite</option>
+                  <option value="Tentative">Tentative</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+            </div>
+            <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Family Head Name</label>
+                <input type="text" name="familyHead" value={voucherData.familyHead} onChange={handleFieldChangeUpper} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>UB Number</label>
+                <input type="text" name="ubNo" value={voucherData.ubNo} onChange={handleFieldChangeUpper} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>MNo (optional)</label>
+                <input type="text" name="mNo" value={voucherData.mNo} onChange={handleFieldChangeUpper} />
+              </div>
+            </div>
+
+            {/* 2. Flight Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>2. Flight Details (Departure & Arrival)</span>
+            </div>
+            {voucherData.flights.map((flight, idx) => (
+              <div key={idx} style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px', marginTop: '10px', backgroundColor: '#ffffff' }}>
+                <strong style={{ display: 'block', marginBottom: '8px', fontSize: '12px', color: '#0a2e5c' }}>{flight.type} Sector</strong>
+                <div className={styles.formGrid4}>
+                  <div className={styles.formGroup}>
+                    <label>Flight No</label>
+                    <input type="text" value={flight.flightNo} onChange={(e) => handleFlightChange(idx, 'flightNo', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Sector (e.g. KHI-JED)</label>
+                    <input type="text" value={flight.sector} onChange={(e) => handleFlightChange(idx, 'sector', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Departure Date/Time</label>
+                    <input type="text" value={flight.depDate} placeholder="e.g. 05-JUL 03:30" onChange={(e) => handleFlightChange(idx, 'depDate', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Arrival Date/Time</label>
+                    <input type="text" value={flight.arrDate} placeholder="e.g. 05-JUL 06:05" onChange={(e) => handleFlightChange(idx, 'arrDate', e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* 3. Hotel Accommodations */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>3. Accommodation Stays</span>
+              <button type="button" onClick={addStay} style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#10b981', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+                <Plus size={12} /> Add Hotel
+              </button>
+            </div>
+            {voucherData.stays.map((stay, index) => (
+              <div key={index} style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px', marginTop: '10px', backgroundColor: '#ffffff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <strong style={{ fontSize: '12px', color: '#0a2e5c' }}>Stay {index + 1}</strong>
+                  {voucherData.stays.length > 1 && (
+                    <button type="button" onClick={() => removeStay(index)} style={{ border: 'none', background: '#ef4444', color: '#ffffff', fontSize: '11px', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+                      Delete
+                    </button>
+                  )}
+                </div>
+                <div className={styles.formGrid3}>
+                  <div className={styles.formGroup}>
+                    <label>City</label>
+                    <select value={stay.city} onChange={(e) => handleStayChange(index, 'city', e.target.value)}>
+                      <option value="Makkah">Makkah</option>
+                      <option value="Medinah">Medinah</option>
+                      <option value="Jeddah">Jeddah</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
+                    <label>Hotel Name</label>
+                    <input type="text" value={stay.hotelName} onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())} />
+                  </div>
+                </div>
+                <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Room View</label>
+                    <input type="text" value={stay.view} onChange={(e) => handleStayChange(index, 'view', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Meal Plan</label>
+                    <input type="text" value={stay.mealPlan} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Room Type</label>
+                    <input type="text" value={stay.roomType} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)} />
+                  </div>
+                </div>
+                <div className={styles.formGrid4} style={{ marginTop: '6px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Check In</label>
+                    <input type="date" value={stay.checkIn} onChange={(e) => handleStayChange(index, 'checkIn', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Check Out</label>
+                    <input type="date" value={stay.checkOut} onChange={(e) => handleStayChange(index, 'checkOut', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Nights</label>
+                    <input type="number" readOnly style={{ backgroundColor: '#f1f5f9' }} value={stay.totalNights} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Conf # (optional)</label>
+                    <input type="text" placeholder="HCN / Confirmation No." value={stay.hcn} onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())} />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* 4. Transport Detail */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>4. Transport Details</span>
+            </div>
+            <div className={styles.formGrid4} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Travel Date</label>
+                <input type="text" name="transportTravelDate" value={voucherData.transportTravelDate} placeholder="e.g. 05-JUL" onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Transporter</label>
+                <input type="text" name="transportTransporter" value={voucherData.transportTransporter} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Transport Type</label>
+                <input type="text" name="transportType" value={voucherData.transportType} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Description</label>
+                <input type="text" name="transportDesc" value={voucherData.transportDesc} onChange={handleFieldChange} />
+              </div>
+            </div>
+
+            {/* 5. Mutamers (Pilgrims) */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>5. Mutamers Manifest</span>
+              <button type="button" onClick={addMutamer} style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#10b981', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+                <Plus size={12} /> Add Mutamer
+              </button>
+            </div>
+            {voucherData.mutamers.map((mutamer, index) => (
+              <div key={index} style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px', marginTop: '10px', backgroundColor: '#ffffff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <strong style={{ fontSize: '12px', color: '#0a2e5c' }}>Mutamer {index + 1}</strong>
+                  {voucherData.mutamers.length > 1 && (
+                    <button type="button" onClick={() => removeMutamer(index)} style={{ border: 'none', background: '#ef4444', color: '#ffffff', fontSize: '11px', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+                      Delete
+                    </button>
+                  )}
+                </div>
+                <div className={styles.formGrid3}>
+                  <div className={styles.formGroup}>
+                    <label>Passport No</label>
+                    <input type="text" value={mutamer.passportNo} onChange={(e) => handleMutamerChange(index, 'passportNo', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
+                    <label>Mutamer Name</label>
+                    <input type="text" value={mutamer.name} onChange={(e) => handleMutamerChange(index, 'name', e.target.value.toUpperCase())} />
+                  </div>
+                </div>
+                <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Gender</label>
+                    <select value={mutamer.gender} onChange={(e) => handleMutamerChange(index, 'gender', e.target.value)}>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>PAX Type</label>
+                    <select value={mutamer.paxType} onChange={(e) => handleMutamerChange(index, 'paxType', e.target.value)}>
+                      <option value="Adult">Adult</option>
+                      <option value="Child">Child</option>
+                      <option value="Infant">Infant</option>
+                    </select>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Bed Included</label>
+                    <select value={mutamer.bed} onChange={(e) => handleMutamerChange(index, 'bed', e.target.value)}>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+                <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
+                  <div className={styles.formGroup}>
+                    <label>Group No</label>
+                    <input type="text" value={mutamer.groupNo} onChange={(e) => handleMutamerChange(index, 'groupNo', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Visa #</label>
+                    <input type="text" value={mutamer.visaNo} onChange={(e) => handleMutamerChange(index, 'visaNo', e.target.value)} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>PNR</label>
+                    <input type="text" value={mutamer.pnr} onChange={(e) => handleMutamerChange(index, 'pnr', e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* 6. Special Instructions & Management Contacts */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>6. Instructions & Ground Support Contacts</span>
+            </div>
+            <div className={styles.formGroup} style={{ marginTop: '10px' }}>
+              <label>Special Instructions (Hijaz Muqadas pax, etc.)</label>
+              <input type="text" name="specialInstructions" value={voucherData.specialInstructions} onChange={handleFieldChange} />
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
+                <strong style={{ fontSize: '11px', color: '#0a2e5c', display: 'block', marginBottom: '6px' }}>Makkah Hotel Contact</strong>
+                <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
+                  <label>Contact Name</label>
+                  <input type="text" name="makkahContactName" value={voucherData.makkahContactName} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>WhatsApp No.</label>
+                  <input type="text" name="makkahContactNo" value={voucherData.makkahContactNo} onChange={handleFieldChange} />
+                </div>
+              </div>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
+                <strong style={{ fontSize: '11px', color: '#0a2e5c', display: 'block', marginBottom: '6px' }}>Madinah Hotel Contact</strong>
+                <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
+                  <label>Contact Name</label>
+                  <input type="text" name="madinahContactName" value={voucherData.madinahContactName} onChange={handleFieldChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>WhatsApp No.</label>
+                  <input type="text" name="madinahContactNo" value={voucherData.madinahContactNo} onChange={handleFieldChange} />
+                </div>
+              </div>
+            </div>
+
+            {/* 7. Company Details */}
+            <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px', marginTop: '15px' }}>
+              <span>7. Company Details</span>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
+              <div className={styles.formGroup}>
+                <label>Company Name</label>
+                <input type="text" name="companyName" value={voucherData.companyName} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Office Address</label>
+                <input type="text" name="officeAddress" value={voucherData.officeAddress} onChange={handleFieldChange} />
+              </div>
+            </div>
+            <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
+              <div className={styles.formGroup}>
+                <label>WhatsApp</label>
+                <input type="text" name="phone" value={voucherData.phone} onChange={handleFieldChange} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Email</label>
+                <input type="text" name="email" value={voucherData.email} onChange={handleFieldChange} />
+              </div>
+            </div>
+            <div className={styles.formGroup} style={{ marginTop: '8px' }}>
+              <label>Authorized Signatory</label>
+              <input type="text" name="authorizedPerson" value={voucherData.authorizedPerson} onChange={handleFieldChangeUpper} />
+            </div>
+
+          </div>
+
+          {/* RIGHT: Live print layout */}
+          <div className={styles.previewPanel}>
+            <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 UMRAH VOUCHER SHEET PREVIEW</span>
+              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
+                <Printer size={14} /> Print PDF
+              </button>
+            </div>
+
+            {/* Document sheet */}
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: '"Outfit", "Inter", "Segoe UI", Arial, sans-serif', padding: '30px 25px', fontSize: '11.5px', color: '#1e293b', lineHeight: '1.4' }}>
+              
+              {/* Header block with Logo and Title */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0a2e5c', paddingBottom: '12px', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '90px', width: 'auto', objectFit: 'contain' }} />
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '11px', color: '#1e293b' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0a2e5c', marginBottom: '4px' }}>UMRAH TRAVEL VOUCHER</div>
+                  <div><strong>VOUCHER DATE:</strong> {voucherData.issueDate}</div>
+                  <div><strong>PACKAGE:</strong> {voucherData.packageCode}</div>
+                  <div><strong>PAX:</strong> {voucherData.paxNo}</div>
+                  <div><strong>BEDS:</strong> {voucherData.bedsNo}</div>
+                </div>
+              </div>
+
+              {/* Family Head info bar in solid Dark Blue */}
+              <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', gap: '20px' }}>
+                  <span><strong>F.Head:</strong> {voucherData.familyHead}</span>
+                  <span><strong>UB No:</strong> {voucherData.ubNo}</span>
+                  {voucherData.mNo && <span><strong>MNo:</strong> {voucherData.mNo}</span>}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '10px', background: '#10b981', padding: '2px 6px', borderRadius: '3px', fontWeight: 'bold', textTransform: 'uppercase' }}>{voucherData.status}</span>
+                  {/* Decorative small printable pseudo QR block */}
+                  <div style={{ width: '22px', height: '22px', backgroundColor: '#ffffff', display: 'flex', padding: '2px' }}>
+                    <div style={{ width: '100%', height: '100%', background: 'repeating-linear-gradient(45deg, #000, #000 2px, #fff 2px, #fff 4px)' }}></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flight Routing Section (DEPARTURE & ARRIVAL side by side) */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                {voucherData.flights.map((flight, idx) => (
+                  <div key={idx} style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '4px 10px', fontWeight: 'bold', fontSize: '10.5px', letterSpacing: '0.5px' }}>
+                      ✈ {flight.type === 'DEPARTURE' ? 'DEPARTURE DETAILS' : 'ARRIVAL DETAILS'}
+                    </div>
+                    <table style={{ width: '100%', fontSize: '10.5px', borderCollapse: 'collapse', margin: '4px' }}>
+                      <tbody>
+                        <tr>
+                          <td style={{ padding: '3px 6px', color: '#4b5563', width: '80px' }}><strong>Flight:</strong></td>
+                          <td style={{ padding: '3px 6px', fontWeight: 'bold' }}>{flight.flightNo || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Sector:</strong></td>
+                          <td style={{ padding: '3px 6px', fontWeight: 'bold' }}>{flight.sector || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Departure:</strong></td>
+                          <td style={{ padding: '3px 6px' }}>{flight.depDate || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Arrival:</strong></td>
+                          <td style={{ padding: '3px 6px' }}>{flight.arrDate || 'N/A'}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+
+              {/* Accommodation Table */}
+              <div style={{ marginBottom: '15px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  🏨 Accommodation Plan
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', border: '1.5px solid #0a2e5c' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>City</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>Hotel Name</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>View</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Meal</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Conf #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>Room Type</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Checkin</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Checkout</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Nights</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {voucherData.stays.map((stay, idx) => {
+                      const checkInFormatted = stay.checkIn ? stay.checkIn.split('-').reverse().slice(0,2).join('-') + '-' + stay.checkIn.split('-')[0].slice(2) : '';
+                      const checkOutFormatted = stay.checkOut ? stay.checkOut.split('-').reverse().slice(0,2).join('-') + '-' + stay.checkOut.split('-')[0].slice(2) : '';
+                      return (
+                        <tr key={idx} style={{ backgroundColor: idx % 2 === 1 ? '#f8fafc' : '#ffffff' }}>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', fontWeight: 'bold' }}>{stay.city}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{stay.hotelName || 'N/A'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{stay.view}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{stay.mealPlan}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold' }}>{stay.hcn || '-'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{stay.roomType}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkInFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkOutFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold' }}>{stay.totalNights}</td>
+                        </tr>
+                      );
+                    })}
+                    <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold' }}>
+                      <td colSpan={8} style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'right' }}>Total Nights:</td>
+                      <td style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center', fontSize: '11px' }}>
+                        {voucherData.stays.reduce((acc, s) => acc + (parseInt(s.totalNights) || 0), 0)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Transport Detail Section */}
+              <div style={{ marginBottom: '15px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  🚌 Transport Logistics
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', border: '1.5px solid #0a2e5c' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '20%' }}>Travel Date</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '30%' }}>Transporter</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '20%' }}>Type</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '30%' }}>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportTravelDate || 'As per Schedule'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '5px', fontWeight: 'bold' }}>{voucherData.transportTransporter || 'N/A'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportType || 'N/A'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportDesc || 'N/A'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mutamers Manifest Table */}
+              <div style={{ marginBottom: '15px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  👤 Pilgrims (Mutamers) list
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', border: '1.5px solid #0a2e5c' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>SNO</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '15%' }}>Passport</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '40%' }}>Mutamer Name</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>G</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '10%' }}>PAX</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>Bed</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>Group #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>Visa #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>PNR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {voucherData.mutamers.map((mutamer, idx) => (
+                      <tr key={idx} style={{ backgroundColor: idx % 2 === 1 ? '#f8fafc' : '#ffffff' }}>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{idx + 1}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: '500', fontFamily: 'monospace' }}>{mutamer.passportNo || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: 'bold' }}>{mutamer.name || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.gender}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.paxType}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.bed}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px' }}>{mutamer.groupNo || '-'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px' }}>{mutamer.visaNo || '-'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: 'bold', fontFamily: 'monospace' }}>{mutamer.pnr || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Ground Support Contacts */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '15px', marginBottom: '15px', alignItems: 'start' }}>
+                <div style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', padding: '8px' }}>
+                  <div><strong>Special Instructions:</strong></div>
+                  <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '11px', marginTop: '3px', textTransform: 'uppercase' }}>
+                    ⚠️ {voucherData.specialInstructions || 'N/A'}
+                  </div>
+                </div>
+                <div style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '4px 8px', fontWeight: 'bold', fontSize: '10px' }}>
+                    📞 GROUND REPRESENTATIVES
+                  </div>
+                  <div style={{ padding: '6px 8px', fontSize: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {voucherData.makkahContactName && (
+                      <div>🕋 <strong>MAKKAH Support:</strong> {voucherData.makkahContactName} ({voucherData.makkahContactNo})</div>
+                    )}
+                    {voucherData.madinahContactName && (
+                      <div>🕌 <strong>MADINA Support:</strong> {voucherData.madinahContactName} ({voucherData.madinahContactNo})</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Urdu Instructions Block */}
+              <div className="urdu-instructions" style={{ border: '1.5px solid #0a2e5c', borderRadius: '5px', padding: '10px 14px', backgroundColor: '#f0f4fa', marginBottom: '15px' }}>
+                <div dir="rtl" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '10.5px', lineHeight: '1.6', color: '#0a2e5c', textAlign: 'right' }}>
+                  <strong style={{ display: 'block', fontSize: '12px', marginBottom: '6px', borderBottom: '1px solid #b9c9e3', paddingBottom: '3px' }}>ضروری ہدایات:-</strong>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px 20px' }}>
+                    <div>
+                      ⭐ سعودیہ میں معتمرین سے پاسپورٹ لینے کی کسی کو اجازت نہیں ہے۔ لہذا اپنا پاسپورٹ اپنے پاس سنبھال کے رکھیں۔ پاسپورٹ گم ہونے کی صورت میں آوٹ پاس اور ٹکٹ کے چارجز معتمر پر عائد ہونگے۔ <br />
+                      ⭐ ہوٹل میں چیک ان اور چیک آوٹ کا وقت ظہر 2 بجے ہے۔ جبکہ مدینہ میں ہوٹل خالی اور صفائی کی صورت میں کچھ دیر انتظار کرنا پڑ سکتا ہے۔ <br />
+                      ⭐ معتمرین یہ ووچر درج شیڈول یا ادارے کے اسٹاف کی طرف سے دیئے گئے روانگی اوقات عمل کرنے کے پابند ہونگے۔ <br />
+                      ⭐ معتمر کو مکہ سے مدینہ، مدینہ سے مکہ، مکہ سے ایئر پورٹ روانگی سے 24 گھنٹے قبل اسٹاف کو اپنا روانگی شیڈول نوٹ کروانا ہو گا۔
+                    </div>
+                    <div>
+                      ⭐ مدینہ روانگی کیلئے صبح 7 بجے ہوٹل سے اپنا سامان اٹھا کر اسٹاف کی طرف سے بتائے گئے مقام پر آنا ضروری ہو گا۔ <br />
+                      ⭐ مکہ سے جدہ ایئرپورٹ روانگی 8 گھنٹے پہلے ہوٹل چھوڑنا ہو گا۔ <br />
+                      ⭐ کسی بھی سیکٹر کی ٹرانسپورٹ چھوٹ جانے پر دوبارہ ٹرانسپورٹ فراہم نہیں کی جائے گی (دوبارہ ٹرانسپورٹ حاصل کرنے کے الگ چارجز ہونگے)۔ <br />
+                      ⭐ پرواز چھوٹ جانے کی صورت میں ادارہ ذمہ دار نہ ہو گا۔ Extra Night کے چارجز معتمر خود ادا کرنے ہونگے۔ <br />
+                      ⭐ سعودی قوانین اور پالیسی پر مکمل عملدرآمد کرنے کی ذمہ داری معتمرین پر عائد ہو گی۔ کسی بھی پریشانی کی صورت میں عازمین یہ ووچر پر درج شدہ سعودی اسٹاف کے نمبر پر رابطہ کریں۔
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '5px', fontSize: '9.5px', borderTop: '1px dashed #cbd5e1', paddingTop: '4px', fontWeight: 'bold' }}>
+                    نوٹ: مندرجہ بالا ہدایات پر عملدرآمد کو یقینی بنائیں کو تاہی کی صورت میں ہونے والے کسی بھی نقصان کی ذمہ داری معتمرین پر ہوگی۔
+                  </div>
+                </div>
+              </div>
+
+              {/* Sign off and Footer */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid #cbd5e1', paddingTop: '10px', marginTop: '10px' }}>
+                <div style={{ fontSize: '9.5px', color: '#64748b', maxWidth: '60%' }}>
+                  <strong>{voucherData.companyName}</strong> <br />
+                  📍 {voucherData.officeAddress} | ✉ {voucherData.email} | 📞 {voucherData.phone}
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '10.5px' }}>
+                  <div style={{ color: '#4b5563' }}>Authorized Signatory:</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#0a2e5c', textTransform: 'uppercase', marginTop: '2px' }}>{voucherData.authorizedPerson}</div>
+                  <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase' }}>RESERVATION DEPT</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export default function UmrahVoucherGenerator() {
+  return (
+    <Suspense fallback={<div className="container" style={{ padding: 40, textAlign: 'center' }}>Loading Umrah voucher sheet...</div>}>
+      <UmrahVoucherGeneratorContent />
+    </Suspense>
+  );
+}

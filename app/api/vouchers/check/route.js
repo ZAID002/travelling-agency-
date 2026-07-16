@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import ETicket from '@/lib/models/ETicket';
 import HotelVoucher from '@/lib/models/HotelVoucher';
+import MaheenVoucher from '@/lib/models/MaheenVoucher';
 
 export async function POST(request) {
   try {
@@ -38,6 +39,20 @@ export async function POST(request) {
       return NextResponse.json({ type: 'HotelVoucher', data: hotel });
     }
 
+    // 3. Search in MaheenVoucher database
+    const maheen = await MaheenVoucher.findOne({
+      voucherNo: cleanVoucherNo,
+      $or: [
+        { familyHead: { $regex: cleanSecondary, $options: 'i' } },
+        { 'mutamers.passportNo': cleanSecondary },
+        { 'mutamers.name': { $regex: cleanSecondary, $options: 'i' } }
+      ]
+    });
+
+    if (maheen) {
+      return NextResponse.json({ type: 'MaheenVoucher', data: maheen });
+    }
+
     return NextResponse.json(
       { error: 'No matching booking record found. Please verify your entries.' },
       { status: 404 }
@@ -50,3 +65,4 @@ export async function POST(request) {
     );
   }
 }
+

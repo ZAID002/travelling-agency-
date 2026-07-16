@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [tickets, setTickets] = useState([]);
   const [vouchers, setVouchers] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [maheenVouchers, setMaheenVouchers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [activeTab, setActiveTab] = useState('vouchers'); // 'vouchers' or 'inquiries'
   const [expandedInquiryId, setExpandedInquiryId] = useState(null);
@@ -36,15 +37,20 @@ export default function AdminDashboard() {
       const invoiceRes = await fetch(`/api/vouchers/invoice?search=${query}`);
       const invoiceData = await invoiceRes.json();
 
+      // Fetch Maheen vouchers
+      const maheenRes = await fetch(`/api/vouchers/maheen?search=${query}`);
+      const maheenData = await maheenRes.json();
+
       // Fetch inquiries
       const inquiryRes = await fetch('/api/inquiries');
       const inquiryData = await inquiryRes.json();
 
-      if (ticketRes.ok && hotelRes.ok && invoiceRes.ok && inquiryRes.ok) {
+      if (ticketRes.ok && hotelRes.ok && invoiceRes.ok && inquiryRes.ok && maheenRes.ok) {
         setTickets(ticketData);
         setVouchers(hotelData);
         setInvoices(invoiceData);
         setInquiries(inquiryData);
+        setMaheenVouchers(maheenData);
       } else {
         setError('Failed to fetch some records.');
       }
@@ -100,6 +106,16 @@ export default function AdminDashboard() {
       date: new Date(i.createdAt).toLocaleDateString(),
       status: i.status,
       link: `/admin/invoices?edit=${i.invoiceNo}`
+    })),
+    ...maheenVouchers.map(m => ({
+      id: m._id,
+      voucherNo: m.voucherNo,
+      type: 'Umrah Voucher',
+      client: m.packageCode || 'N/A',
+      primaryName: m.familyHead || 'N/A',
+      date: new Date(m.createdAt).toLocaleDateString(),
+      status: m.status,
+      link: `/admin/maheen-hotel?edit=${m.voucherNo}`
     }))
   ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -119,6 +135,9 @@ export default function AdminDashboard() {
             </Link>
             <Link href="/admin/hotel-vouchers" className="btn btn-secondary">
               <Plus size={16} /> New Hotel Voucher
+            </Link>
+            <Link href="/admin/maheen-hotel" className="btn btn-secondary" style={{ backgroundColor: '#10b981', borderColor: '#10b981', color: '#ffffff' }}>
+              <Plus size={16} /> New Umrah Voucher
             </Link>
             <Link href="/admin/invoices" className="btn btn-secondary" style={{ backgroundColor: '#4f46e5', borderColor: '#4f46e5', color: '#ffffff' }}>
               <Plus size={16} /> New Invoice
@@ -256,7 +275,7 @@ export default function AdminDashboard() {
                           <td style={{ fontWeight: '700', fontFamily: 'monospace' }}>{item.voucherNo}</td>
                           <td>
                             <span className={`${styles.badge} ${
-                              item.type === 'E-Ticket' ? styles.badgeTicket : item.type === 'Hotel Voucher' ? styles.badgeHotel : styles.badgeInvoice
+                              item.type === 'E-Ticket' ? styles.badgeTicket : item.type === 'Hotel Voucher' ? styles.badgeHotel : item.type === 'Umrah Voucher' ? styles.badgeMaheen : styles.badgeInvoice
                             }`}>
                               {item.type}
                             </span>
