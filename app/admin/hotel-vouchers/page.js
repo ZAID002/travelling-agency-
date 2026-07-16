@@ -632,7 +632,7 @@ function HotelVoucherGeneratorContent() {
               {/* Header block with Logo and Title */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>FLY TO WAY TRAVEL & TOURS</h1>

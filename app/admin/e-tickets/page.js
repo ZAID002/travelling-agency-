@@ -875,7 +875,7 @@ function ETicketGeneratorContent() {
               
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '12px', marginBottom: '15px' }}>
-                <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
+                <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
                 <div style={{ textAlign: 'right' }}>
                   <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>E-Ticket Voucher</h1>
                   <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: 'bold' }}>{ticketData.voucherNo || 'FLY-1001'}</span>
