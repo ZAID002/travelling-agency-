@@ -49,7 +49,7 @@ function InvoiceGeneratorContent() {
     hotelDetails: 'RAMZAN BOOKINS ONCE CONFIMRED (NON REFUNABLE/NON CANCELABLE)',
     checkInTime: '18:00 KSA',
     checkOutTime: '12:00 KSA',
-    authorizedPerson: 'MURTUZA',
+    authorizedPerson: 'SUJACH',
     remarks: '',
     officeAddress: 'College Road, Lahore - Pakistan',
     phone: '+923082122760',
@@ -626,11 +626,11 @@ function InvoiceGeneratorContent() {
               
               {/* Header block with Logo and Title */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px' }}>
-                <div style={{ width: '220px', display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: '280px', display: 'flex', alignItems: 'center' }}>
                   {invoiceData.companyLogo === 'air1' ? (
-                    <img src="/air1-logo.svg" alt="Air 1 Logo" style={{ height: '70px', width: 'auto', objectFit: 'contain' }} />
+                    <img src="/air1-logo.svg" alt="Air 1 Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
                   ) : invoiceData.companyLogo === 'flytoway' ? (
-                    <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
+                    <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
                   ) : (
                     <div style={{ fontWeight: 'bold', fontSize: '20px', color: '#0f4c81' }}>AIR 1 TRAVELS</div>
                   )}
