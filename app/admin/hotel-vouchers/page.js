@@ -35,7 +35,7 @@ function HotelVoucherGeneratorContent() {
     officeAddress: 'College Road, Lahore - Pakistan',
     phone: '+923082122760',
     email: 'info@flytoway.com',
-    authorizedPerson: 'SUJACH',
+    authorizedPerson: 'SHUJA CH',
     importantNotes: 'Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.',
     isMaheen: false,
     stays: [

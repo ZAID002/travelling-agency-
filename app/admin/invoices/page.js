@@ -49,7 +49,7 @@ function InvoiceGeneratorContent() {
     hotelDetails: 'RAMZAN BOOKINS ONCE CONFIMRED (NON REFUNABLE/NON CANCELABLE)',
     checkInTime: '18:00 KSA',
     checkOutTime: '12:00 KSA',
-    authorizedPerson: 'SUJACH',
+    authorizedPerson: 'SHUJA CH',
     remarks: '',
     officeAddress: 'College Road, Lahore - Pakistan',
     phone: '+923082122760',
