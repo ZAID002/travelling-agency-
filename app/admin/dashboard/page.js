@@ -12,6 +12,7 @@ import styles from './dashboard.module.css';
 export default function AdminDashboard() {
   const [tickets, setTickets] = useState([]);
   const [vouchers, setVouchers] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [activeTab, setActiveTab] = useState('vouchers'); // 'vouchers' or 'inquiries'
   const [expandedInquiryId, setExpandedInquiryId] = useState(null);
@@ -31,13 +32,18 @@ export default function AdminDashboard() {
       const hotelRes = await fetch(`/api/vouchers/hotel?search=${query}`);
       const hotelData = await hotelRes.json();
 
+      // Fetch invoices
+      const invoiceRes = await fetch(`/api/vouchers/invoice?search=${query}`);
+      const invoiceData = await invoiceRes.json();
+
       // Fetch inquiries
       const inquiryRes = await fetch('/api/inquiries');
       const inquiryData = await inquiryRes.json();
 
-      if (ticketRes.ok && hotelRes.ok && inquiryRes.ok) {
+      if (ticketRes.ok && hotelRes.ok && invoiceRes.ok && inquiryRes.ok) {
         setTickets(ticketData);
         setVouchers(hotelData);
+        setInvoices(invoiceData);
         setInquiries(inquiryData);
       } else {
         setError('Failed to fetch some records.');
@@ -61,6 +67,7 @@ export default function AdminDashboard() {
   // Compute stats
   const totalTickets = tickets.length;
   const totalHotels = vouchers.length;
+  const totalInvoices = invoices.length;
 
   // Combine history for a single unified log, sorted by newest first
   const unifiedHistory = [
@@ -83,6 +90,16 @@ export default function AdminDashboard() {
       date: new Date(v.createdAt).toLocaleDateString(),
       status: v.status,
       link: `/admin/hotel-vouchers?edit=${v.voucherNo}`
+    })),
+    ...invoices.map(i => ({
+      id: i._id,
+      voucherNo: i.invoiceNo,
+      type: 'Invoice',
+      client: i.clientName || 'N/A',
+      primaryName: i.guestName || 'N/A',
+      date: new Date(i.createdAt).toLocaleDateString(),
+      status: i.status,
+      link: `/admin/invoices?edit=${i.invoiceNo}`
     }))
   ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -102,6 +119,9 @@ export default function AdminDashboard() {
             </Link>
             <Link href="/admin/hotel-vouchers" className="btn btn-secondary">
               <Plus size={16} /> New Hotel Voucher
+            </Link>
+            <Link href="/admin/invoices" className="btn btn-secondary" style={{ backgroundColor: '#4f46e5', borderColor: '#4f46e5', color: '#ffffff' }}>
+              <Plus size={16} /> New Invoice
             </Link>
           </div>
         </div>
@@ -127,6 +147,16 @@ export default function AdminDashboard() {
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>Hotel Confirmation Vouchers</span>
               <span className={styles.statValue}>{loading ? '...' : totalHotels}</span>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5' }}>
+              <FileText size={24} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Issued Invoices</span>
+              <span className={styles.statValue}>{loading ? '...' : totalInvoices}</span>
             </div>
           </div>
         </div>
@@ -226,7 +256,7 @@ export default function AdminDashboard() {
                           <td style={{ fontWeight: '700', fontFamily: 'monospace' }}>{item.voucherNo}</td>
                           <td>
                             <span className={`${styles.badge} ${
-                              item.type === 'E-Ticket' ? styles.badgeTicket : styles.badgeHotel
+                              item.type === 'E-Ticket' ? styles.badgeTicket : item.type === 'Hotel Voucher' ? styles.badgeHotel : styles.badgeInvoice
                             }`}>
                               {item.type}
                             </span>
