@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { 
   Plane, Hotel, ShieldCheck, Search, Plus, 
   Eye, FileText, Settings, User, RefreshCw,
-  ChevronDown, ChevronUp, Mail, Phone, MessageSquare
+  ChevronDown, ChevronUp, Mail, Phone, MessageSquare, Trash2
 } from 'lucide-react';
 import styles from './dashboard.module.css';
 
@@ -119,6 +119,46 @@ export default function AdminDashboard() {
     }))
   ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
+  const handleDelete = async (id, type) => {
+    if (!window.confirm(`Are you sure you want to delete this ${type}?`)) {
+      return;
+    }
+
+    let endpoint = '';
+    if (type === 'E-Ticket') {
+      endpoint = `/api/vouchers/e-ticket?id=${id}`;
+    } else if (type === 'Hotel Voucher') {
+      endpoint = `/api/vouchers/hotel?id=${id}`;
+    } else if (type === 'Invoice') {
+      endpoint = `/api/vouchers/invoice?id=${id}`;
+    } else if (type === 'Umrah Voucher') {
+      endpoint = `/api/vouchers/maheen?id=${id}`;
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        if (type === 'E-Ticket') {
+          setTickets(prev => prev.filter(item => item._id !== id));
+        } else if (type === 'Hotel Voucher') {
+          setVouchers(prev => prev.filter(item => item._id !== id));
+        } else if (type === 'Invoice') {
+          setInvoices(prev => prev.filter(item => item._id !== id));
+        } else if (type === 'Umrah Voucher') {
+          setMaheenVouchers(prev => prev.filter(item => item._id !== id));
+        }
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete the record.');
+      }
+    } catch (err) {
+      alert('Connection error. Could not delete record.');
+    }
+  };
+
   return (
     <div className={styles.dashboard}>
       <div className="container">
@@ -176,6 +216,16 @@ export default function AdminDashboard() {
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>Issued Invoices</span>
               <span className={styles.statValue}>{loading ? '...' : totalInvoices}</span>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon} style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)' }}>
+              <ShieldCheck size={24} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Umrah Vouchers</span>
+              <span className={styles.statValue}>{loading ? '...' : maheenVouchers.length}</span>
             </div>
           </div>
         </div>
@@ -297,10 +347,17 @@ export default function AdminDashboard() {
                               {item.status}
                             </span>
                           </td>
-                          <td>
-                            <Link href={item.link} className="btn btn-outline" style={{ padding: '6px 10px', fontSize: 12 }}>
-                              <Eye size={12} /> Edit / Print
+                          <td style={{ display: 'flex', gap: '8px' }}>
+                            <Link href={item.link} className="btn btn-outline" style={{ padding: '6px 10px', fontSize: 12, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Eye size={12} /> Edit
                             </Link>
+                            <button 
+                              onClick={() => handleDelete(item.id, item.type)}
+                              className="btn btn-outline"
+                              style={{ padding: '6px 10px', fontSize: 12, borderColor: '#ef4444', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: 'transparent' }}
+                            >
+                              <Trash2 size={12} /> Delete
+                            </button>
                           </td>
                         </tr>
                       ))}
