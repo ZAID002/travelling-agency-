@@ -401,7 +401,7 @@ function ETicketGeneratorContent() {
     <div className={styles.container}>
       <style>{`
         @media print {
-          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .previewToolbar, .previewToolbar * {
+          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .stackedFormCard, .stackedFormCard *, .previewToolbar, .previewToolbar *, .pdfActionButtons, .pdfActionButtons * {
             display: none !important;
           }
           body, html {
@@ -409,7 +409,7 @@ function ETicketGeneratorContent() {
             margin: 0 !important;
             padding: 0 !important;
           }
-          .previewPanel {
+          .previewPanel, .stackedPreviewPanel {
             width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -447,10 +447,10 @@ function ETicketGeneratorContent() {
           </div>
         </div>
 
-        <div className={styles.splitLayout}>
+        <div className={styles.stackedLayout}>
           
           {/* LEFT: Form Panel */}
-          <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+          <div className={styles.stackedFormCard}>
             
             {/* Search Saved Tickets */}
             <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
@@ -862,16 +862,16 @@ function ETicketGeneratorContent() {
           </div>
 
           {/* RIGHT: Live print layout */}
-          <div className={styles.previewPanel}>
-            <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 FLIGHT TICKET PREVIEW</span>
+          <div className={styles.stackedPreviewPanel}>
+            <div className={styles.previewToolbar} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 FLIGHT TICKET PREVIEW (PDF VIEWER STYLE)</span>
               <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
                 <Printer size={14} /> Print PDF
               </button>
             </div>
 
             {/* Document sheet */}
-            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '35px 25px', fontSize: '11.5px', color: '#000000', lineHeight: '1.4' }}>
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '35px 25px', fontSize: '11.5px', color: '#000000', lineHeight: '1.4', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
               
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '12px', marginBottom: '15px' }}>
@@ -1025,6 +1025,51 @@ function ETicketGeneratorContent() {
               </div>
 
             </div>
+
+            {/* PDF Action Buttons at bottom of document viewer */}
+            <div className={`${styles.pdfActionButtons} no-print-bar`}>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#035a37', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Printer size={18} /> Print E-Ticket
+              </button>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#2563eb', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Save size={18} /> Download PDF
+              </button>
+            </div>
+
           </div>
 
         </div>
