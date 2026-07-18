@@ -22,54 +22,32 @@ function UmrahVoucherGeneratorContent() {
     voucherNo: '',
     status: 'Definite',
     issueDate: new Date().toLocaleDateString('en-GB'),
-    packageCode: 'PACKAGE_001',
-    paxNo: '5 (A:5, C:0, I:0)',
-    bedsNo: '5',
-    familyHead: 'MUHAMMAD RASHEED HAFIZ LUQMAN',
-    ubNo: 'UB-101965',
+    packageCode: '',
+    paxNo: '1 (A:1, C:0, I:0)',
+    bedsNo: '1',
+    familyHead: '',
+    ubNo: '',
     mNo: '',
     isMaheen: true,
     
     // Flight departures and arrivals
     flights: [
-      { type: 'DEPARTURE', flightNo: 'PA-170', sector: 'KHI-JED', depDate: '05-JUL 03:30', arrDate: '05-JUL 06:05' },
-      { type: 'ARRIVAL', flightNo: 'PA-171', sector: 'JED-KHI', depDate: '24-JUL 07:15', arrDate: '24-JUL 13:45' }
+      { type: 'DEPARTURE', flightNo: '', sector: '', depDate: '', arrDate: '' },
+      { type: 'ARRIVAL', flightNo: '', sector: '', depDate: '', arrDate: '' }
     ],
 
     // Stays list
     stays: [
       {
         city: 'Makkah',
-        hotelName: 'SHAZA WASSAM 3/ 4/ WAHDAT AL KHAIR/ EQUAL',
+        hotelName: '',
         view: 'Standard',
         mealPlan: 'RO',
         hcn: '',
         roomType: 'Sharing (Family)',
-        checkIn: '2026-07-05',
-        checkOut: '2026-07-11',
-        totalNights: 6
-      },
-      {
-        city: 'Medinah',
-        hotelName: 'WAQAR INTERNATIONAL/ EQUAL',
-        view: 'Standard',
-        mealPlan: 'RO',
-        hcn: '',
-        roomType: 'Sharing (Family)',
-        checkIn: '2026-07-11',
-        checkOut: '2026-07-19',
-        totalNights: 8
-      },
-      {
-        city: 'Makkah',
-        hotelName: 'SHAZA WASSAM 3/ 4/ WAHDAT AL KHAIR/ EQUAL',
-        view: 'Standard',
-        mealPlan: 'RO',
-        hcn: '',
-        roomType: 'Sharing (Gender)',
-        checkIn: '2026-07-19',
-        checkOut: '2026-07-24',
-        totalNights: 5
+        checkIn: '',
+        checkOut: '',
+        totalNights: 0
       }
     ],
 
@@ -81,15 +59,11 @@ function UmrahVoucherGeneratorContent() {
 
     // Mutamers list
     mutamers: [
-      { passportNo: 'LP9848311', name: 'MUHAMMAD RASHEED HAFIZ LUQMAN', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
-      { passportNo: 'TR1079761', name: 'ABDUL RASHEED GHULAM QADIR', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
-      { passportNo: 'UC0008231', name: 'MAAH NOOR MUHAMMAD BASHIR', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
-      { passportNo: 'VJ3121761', name: 'SUGHRAN BIBI ABDUL RASHEED', gender: 'F', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' },
-      { passportNo: 'NH4915361', name: 'MUSARRAT KOUSAR MUHAMMAD BASHIR', gender: 'F', paxType: 'Adult', bed: 'Yes', groupNo: '480900083925', visaNo: '', pnr: '' }
+      { passportNo: '', name: '', gender: 'M', paxType: 'Adult', bed: 'Yes', groupNo: '', visaNo: '', pnr: '' }
     ],
 
     // Emergency Contacts
-    specialInstructions: 'hijaz muqadas pax',
+    specialInstructions: '',
     makkahContactName: 'Muhammad Waqas',
     makkahContactNo: '+92-347-9416446',
     madinahContactName: 'Mehmood',
