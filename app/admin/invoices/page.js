@@ -264,7 +264,7 @@ function InvoiceGeneratorContent() {
     <div className={styles.container}>
       <style>{`
         @media print {
-          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .previewToolbar, .previewToolbar * {
+          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .stackedFormCard, .stackedFormCard *, .previewToolbar, .previewToolbar *, .pdfActionButtons, .pdfActionButtons * {
             display: none !important;
           }
           body, html {
@@ -272,7 +272,7 @@ function InvoiceGeneratorContent() {
             margin: 0 !important;
             padding: 0 !important;
           }
-          .previewPanel {
+          .previewPanel, .stackedPreviewPanel {
             width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -283,9 +283,14 @@ function InvoiceGeneratorContent() {
             width: 100% !important;
             max-width: 100% !important;
             border: none !important;
-            padding: 0 !important;
+            padding: 1.6cm !important;
             margin: 0 !important;
             box-shadow: none !important;
+            box-sizing: border-box !important;
+          }
+          @page {
+            size: A4;
+            margin: 0 !important;
           }
         }
       `}</style>
@@ -310,10 +315,10 @@ function InvoiceGeneratorContent() {
           </div>
         </div>
 
-        <div className={styles.splitLayout}>
+        <div className={styles.stackedLayout}>
           
           {/* LEFT: Form Panel */}
-          <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+          <div className={`${styles.stackedFormCard} no-print-bar`}>
             
             {/* Search Saved Invoices */}
             <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
@@ -613,24 +618,24 @@ function InvoiceGeneratorContent() {
           </div>
 
           {/* RIGHT: Live Print Panel */}
-          <div className={styles.previewPanel}>
-            <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 INVOICE SHEET PREVIEW</span>
+          <div className={styles.stackedPreviewPanel}>
+            <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 INVOICE SHEET PREVIEW (PDF VIEWER STYLE)</span>
               <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
                 <Printer size={14} /> Print PDF
               </button>
             </div>
 
             {/* Document sheet */}
-            <div id="invoice-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '40px 30px', fontSize: '12px', color: '#000000', lineHeight: '1.4', minHeight: '1000px' }}>
+            <div id="invoice-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '45px 35px', fontSize: '13.5px', color: '#000000', lineHeight: '1.5', minHeight: '1000px', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
               
               {/* Header block with Logo and Title */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #cbd5e1', paddingBottom: '16px', marginBottom: '25px' }}>
                 <div style={{ width: '280px', display: 'flex', alignItems: 'center' }}>
                   {invoiceData.companyLogo === 'air1' ? (
                     <img src="/air1-logo.svg" alt="Air 1 Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
                   ) : invoiceData.companyLogo === 'flytoway' ? (
-                    <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
+                    <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
                   ) : (
                     <div style={{ fontWeight: 'bold', fontSize: '20px', color: '#0f4c81' }}>AIR 1 TRAVELS</div>
                   )}
@@ -662,24 +667,24 @@ function InvoiceGeneratorContent() {
               </div>
 
               {/* Salutations and Greeting */}
-              <div style={{ marginBottom: '15px' }}>
-                <div style={{ margin: '0 0 4px 0', fontSize: '12px' }}>Dear Sir :</div>
-                <div style={{ margin: '0 0 6px 0', fontSize: '12px' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <div style={{ margin: '0 0 6px 0', fontSize: '13.5px' }}>Dear Sir :</div>
+                <div style={{ margin: '0 0 10px 0', fontSize: '13.5px', lineHeight: '1.45' }}>
                   Greeting From <strong style={{ color: '#0b3c5d' }}>{invoiceData.companyLogo === 'air1' ? 'Air 1 Travels & Tours' : 'Fly To Way Travels'}</strong>.
                   First of All, We would like to take this opportunity to welcome you at {invoiceData.companyLogo === 'air1' ? 'Air 1 Travels & Tours' : 'Fly To Way Travels'}
                 </div>
-                <div style={{ margin: 0, fontSize: '12px', color: '#1e293b' }}>
+                <div style={{ margin: 0, fontSize: '13.5px', color: '#1e293b' }}>
                   We are pleased to confirm the following reservation on a <strong style={{ textTransform: 'uppercase', color: '#0b3c5d' }}>{invoiceData.status}</strong> basis.
                 </div>
                 {invoiceData.dueDate && (
-                  <div style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#000000' }}>
+                  <div style={{ margin: '8px 0 0 0', fontSize: '13.5px', color: '#000000' }}>
                     Please clear the amount before: <strong>{invoiceData.dueDate}</strong>
                   </div>
                 )}
               </div>
 
               {/* Client & Guest Details block */}
-              <div style={{ display: 'grid', gridTemplateColumns: '120px 10px 1fr', gap: '4px', marginBottom: '15px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 10px 1fr', gap: '6px', marginBottom: '25px', borderBottom: '1px solid #cbd5e1', paddingBottom: '14px', fontSize: '13px' }}>
                 <div>Client</div>
                 <div>:</div>
                 <div style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{invoiceData.clientName}</div>
@@ -698,20 +703,20 @@ function InvoiceGeneratorContent() {
               </div>
 
               {/* Items Table */}
-              <div style={{ marginBottom: '15px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #cbd5e1' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1px solid #cbd5e1' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#093a5e', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Qty</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Room Type</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>View</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Meal</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Check In</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Check Out</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Nights</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Hotel Conf. #</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Rate</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: 'bold' }}>Total</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Qty</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Room Type</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>View</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Meal</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Check In</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Check Out</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Nights</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Hotel Conf. #</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Rate</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -720,62 +725,62 @@ function InvoiceGeneratorContent() {
                       const checkOutFormatted = item.checkOut ? item.checkOut.split('-').reverse().join('/') : '';
                       return (
                         <tr key={idx} style={{ backgroundColor: idx % 2 === 1 ? '#f8fafc' : '#ffffff' }}>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.qty}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.roomType}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.view}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.meal}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkInFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{checkOutFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.nights}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center', fontWeight: '500' }}>{item.hcn}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'center' }}>{item.rate}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>{item.total}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.qty}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.roomType}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.view}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.meal}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkInFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkOutFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.nights}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: '500' }}>{item.hcn}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{item.rate}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'right', fontWeight: 'bold' }}>{item.total}</td>
                         </tr>
                       );
                     })}
                     
                     {/* Aggregated Total Row */}
                     <tr>
-                      <td colSpan={7} style={{ border: 'none', padding: '8px 6px', textAlign: 'right' }}></td>
-                      <td colSpan={2} style={{ border: '1px solid #cbd5e1', padding: '8px 6px', fontWeight: 'bold', backgroundColor: '#f1f5f9', textAlign: 'right' }}>Total</td>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '8px 6px', fontWeight: 'bold', backgroundColor: '#f1f5f9', textAlign: 'right', color: '#b91c1c' }}>
+                      <td colSpan={7} style={{ border: 'none', padding: '10px 8px', textAlign: 'right' }}></td>
+                      <td colSpan={2} style={{ border: '1px solid #cbd5e1', padding: '10px 8px', fontWeight: 'bold', backgroundColor: '#f1f5f9', textAlign: 'right' }}>Total</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '10px 8px', fontWeight: 'bold', backgroundColor: '#f1f5f9', textAlign: 'right', color: '#b91c1c' }}>
                         SAR{grandTotalSAR}
                       </td>
                     </tr>
                   </tbody>
                 </table>
-                <div style={{ textAlign: 'right', fontSize: '10px', color: '#64748b', marginTop: '4px', fontStyle: 'italic' }}>
+                <div style={{ textAlign: 'right', fontSize: '11px', color: '#64748b', marginTop: '6px', fontStyle: 'italic' }}>
                   inclusive of all taxes
                 </div>
               </div>
 
               {/* Currency conversion rates / Optional dates */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
                 <div>
                   {invoiceData.rateOfExchange && (
-                    <div style={{ color: '#b91c1c', fontWeight: 'bold', fontSize: '13px' }}>
+                    <div style={{ color: '#b91c1c', fontWeight: 'bold', fontSize: '14.5px' }}>
                       Rate of Exchange: <span style={{ marginLeft: 6 }}>{invoiceData.rateOfExchange}</span>
                     </div>
                   )}
                   {invoiceData.rateOfExchange && grandTotalSAR > 0 && (
-                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#093a5e', marginTop: '4px' }}>
+                    <div style={{ fontSize: '13.5px', fontWeight: 'bold', color: '#093a5e', marginTop: '4px' }}>
                       Equivalent Converted Total: <span style={{ color: '#b91c1c' }}>PKR {grandTotalConverted}</span>
                     </div>
                   )}
                 </div>
                 {invoiceData.dueDate && (
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ color: '#64748b', fontSize: '11px' }}>Optional Date</div>
-                    <div style={{ color: '#b91c1c', fontWeight: 'bold', fontSize: '13px' }}>{invoiceData.dueDate}</div>
+                    <div style={{ color: '#64748b', fontSize: '12px' }}>Optional Date</div>
+                    <div style={{ color: '#b91c1c', fontWeight: 'bold', fontSize: '14px' }}>{invoiceData.dueDate}</div>
                   </div>
                 )}
               </div>
 
               {/* Hotel checkout details / cancellation policies */}
               {invoiceData.hotelDetails && (
-                <div style={{ border: '1px solid #fca5a5', borderRadius: '4px', padding: '10px', backgroundColor: '#fef2f2', marginBottom: '15px', fontSize: '11.5px', color: '#991b1b', fontWeight: 'bold' }}>
+                <div style={{ border: '1px solid #fca5a5', borderRadius: '4px', padding: '12px 14px', backgroundColor: '#fef2f2', marginBottom: '25px', fontSize: '13px', color: '#991b1b', fontWeight: 'bold' }}>
                   <div style={{ textTransform: 'uppercase', marginBottom: '4px' }}>{invoiceData.hotelDetails}</div>
-                  <div style={{ fontSize: '10px', color: '#7f1d1d', fontWeight: 'normal' }}>
+                  <div style={{ fontSize: '11.5px', color: '#7f1d1d', fontWeight: 'normal' }}>
                     CHECK IN : {invoiceData.checkInTime} | CHECK OUT : {invoiceData.checkOutTime}
                   </div>
                 </div>
@@ -783,13 +788,13 @@ function InvoiceGeneratorContent() {
 
               {/* Bank Details section */}
               {invoiceData.bankDetails.length > 0 && (
-                <div style={{ border: '1px solid #eab308', borderRadius: '4px', overflow: 'hidden', marginBottom: '15px' }}>
-                  <div style={{ backgroundColor: '#fef08a', color: '#854d0e', padding: '5px 10px', fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <div style={{ border: '1px solid #eab308', borderRadius: '4px', overflow: 'hidden', marginBottom: '25px' }}>
+                  <div style={{ backgroundColor: '#fef08a', color: '#854d0e', padding: '8px 12px', fontWeight: 'bold', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Bank Details:
                   </div>
-                  <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: invoiceData.bankDetails.length > 1 ? '1fr 1fr' : '1fr', gap: '20px', fontSize: '10.5px', backgroundColor: '#fefcf0' }}>
+                  <div style={{ padding: '12px 14px', display: 'grid', gridTemplateColumns: invoiceData.bankDetails.length > 1 ? '1fr 1fr' : '1fr', gap: '20px', fontSize: '12px', backgroundColor: '#fefcf0' }}>
                     {invoiceData.bankDetails.map((bank, index) => (
-                      <div key={index} style={{ borderLeft: '2.5px solid #eab308', paddingLeft: '8px' }}>
+                      <div key={index} style={{ borderLeft: '2.5px solid #eab308', paddingLeft: '10px' }}>
                         <div><strong>Account Title:</strong> {bank.accountTitle}</div>
                         <div><strong>Bank:</strong> {bank.bankName}</div>
                         <div><strong>Account / IBAN #:</strong> {bank.accountNo}</div>
@@ -801,31 +806,76 @@ function InvoiceGeneratorContent() {
               )}
 
               {/* Regards Section */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'right', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'right', marginBottom: '30px' }}>
                 <div>
-                  <div style={{ fontStyle: 'italic', fontSize: '12px', color: '#475569' }}>Regards,</div>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#b91c1c', textTransform: 'uppercase', marginTop: '2px' }}>
+                  <div style={{ fontStyle: 'italic', fontSize: '13.5px', color: '#475569' }}>Regards,</div>
+                  <div style={{ fontSize: '17.5px', fontWeight: 'bold', color: '#b91c1c', textTransform: 'uppercase', marginTop: '2px' }}>
                     {invoiceData.authorizedPerson}
                   </div>
-                  <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#093a5e', letterSpacing: '1px', marginTop: '1px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#093a5e', letterSpacing: '1px', marginTop: '1px' }}>
                     RESERVATION
                   </div>
                 </div>
               </div>
 
               {/* Bottom fine print legal terms */}
-              <div style={{ fontSize: '10px', color: '#4b5563', lineHeight: '1.4', borderTop: '1px solid #cbd5e1', paddingTop: '10px', marginBottom: '25px', textAlign: 'justify' }}>
+              <div style={{ fontSize: '11px', color: '#4b5563', lineHeight: '1.45', borderTop: '1px solid #cbd5e1', paddingTop: '14px', marginBottom: '35px', textAlign: 'justify' }}>
                 Check in time at: 16:00 any early arrival subject to availability. Check out time at: 14:00, after 14:00 one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.
               </div>
 
               {/* Footer bar containing agency contact */}
-              <div style={{ borderTop: '1.5px solid #cbd5e1', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#475569' }}>
+              <div style={{ borderTop: '1.5px solid #cbd5e1', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '10.5px', color: '#475569' }}>
                 <span>📍 {invoiceData.officeAddress}</span>
                 <span>📞 {invoiceData.phone}</span>
                 <span>✉ {invoiceData.email}</span>
               </div>
 
             </div>
+
+            {/* PDF Action Buttons */}
+            <div className={`${styles.pdfActionButtons} no-print-bar`}>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#093a5e', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Printer size={18} /> Print Invoice
+              </button>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#2563eb', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Save size={18} /> Download PDF
+              </button>
+            </div>
+
           </div>
 
         </div>

@@ -294,7 +294,7 @@ function UmrahVoucherGeneratorContent() {
     <div className={styles.container}>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .previewToolbar, .previewToolbar * {
+          .no-print-bar, .no-print-bar *, .formCard, .formCard *, .stackedFormCard, .stackedFormCard *, .previewToolbar, .previewToolbar *, .pdfActionButtons, .pdfActionButtons * {
             display: none !important;
           }
           body, html {
@@ -302,7 +302,7 @@ function UmrahVoucherGeneratorContent() {
             margin: 0 !important;
             padding: 0 !important;
           }
-          .previewPanel {
+          .previewPanel, .stackedPreviewPanel {
             width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -313,13 +313,17 @@ function UmrahVoucherGeneratorContent() {
             width: 100% !important;
             max-width: 100% !important;
             border: none !important;
-            padding: 10px !important;
+            padding: 1.6cm !important;
             margin: 0 !important;
             box-shadow: none !important;
-            box-sizing: border-box;
+            box-sizing: border-box !important;
           }
           .urdu-instructions {
             page-break-inside: avoid;
+          }
+          @page {
+            size: A4;
+            margin: 0 !important;
           }
         }
       `}} />
@@ -344,10 +348,10 @@ function UmrahVoucherGeneratorContent() {
           </div>
         </div>
 
-        <div className={styles.splitLayout}>
+        <div className={styles.stackedLayout}>
           
           {/* LEFT: Form Panel */}
-          <div className={styles.formCard} style={{ maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+          <div className={`${styles.stackedFormCard} no-print-bar`}>
             
             {/* Search Saved Vouchers */}
             <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
@@ -702,24 +706,24 @@ function UmrahVoucherGeneratorContent() {
           </div>
 
           {/* RIGHT: Live print layout */}
-          <div className={styles.previewPanel}>
-            <div className={styles.previewToolbar} style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 UMRAH VOUCHER SHEET PREVIEW</span>
+          <div className={styles.stackedPreviewPanel}>
+            <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 UMRAH VOUCHER SHEET PREVIEW (PDF VIEWER STYLE)</span>
               <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
                 <Printer size={14} /> Print PDF
               </button>
             </div>
 
             {/* Document sheet */}
-            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: '"Outfit", "Inter", "Segoe UI", Arial, sans-serif', padding: '30px 25px', fontSize: '11.5px', color: '#1e293b', lineHeight: '1.4' }}>
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: '"Outfit", "Inter", "Segoe UI", Arial, sans-serif', padding: '45px 35px', fontSize: '13.5px', color: '#1e293b', lineHeight: '1.5', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
               
               {/* Header block with Logo and Title */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0a2e5c', paddingBottom: '12px', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0a2e5c', paddingBottom: '16px', marginBottom: '25px' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '90px', width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '95px', width: 'auto', objectFit: 'contain' }} />
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '11px', color: '#1e293b' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0a2e5c', marginBottom: '4px' }}>UMRAH TRAVEL VOUCHER</div>
+                <div style={{ textAlign: 'right', fontSize: '12.5px', color: '#1e293b' }}>
+                  <div style={{ fontSize: '16.5px', fontWeight: 'bold', color: '#0a2e5c', marginBottom: '4px' }}>UMRAH TRAVEL VOUCHER</div>
                   <div><strong>VOUCHER DATE:</strong> {voucherData.issueDate}</div>
                   <div><strong>PACKAGE:</strong> {voucherData.packageCode}</div>
                   <div><strong>PAX:</strong> {voucherData.paxNo}</div>
@@ -728,14 +732,14 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Family Head info bar in solid Dark Blue */}
-              <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '8px 14px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', fontSize: '13.5px' }}>
                 <div style={{ display: 'flex', gap: '20px' }}>
                   <span><strong>F.Head:</strong> {voucherData.familyHead}</span>
                   <span><strong>UB No:</strong> {voucherData.ubNo}</span>
                   {voucherData.mNo && <span><strong>MNo:</strong> {voucherData.mNo}</span>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '10px', background: '#10b981', padding: '2px 6px', borderRadius: '3px', fontWeight: 'bold', textTransform: 'uppercase' }}>{voucherData.status}</span>
+                  <span style={{ fontSize: '11.5px', background: '#10b981', padding: '3px 8px', borderRadius: '3px', fontWeight: 'bold', textTransform: 'uppercase' }}>{voucherData.status}</span>
                   {/* Decorative small printable pseudo QR block */}
                   <div style={{ width: '22px', height: '22px', backgroundColor: '#ffffff', display: 'flex', padding: '2px' }}>
                     <div style={{ width: '100%', height: '100%', background: 'repeating-linear-gradient(45deg, #000, #000 2px, #fff 2px, #fff 4px)' }}></div>
@@ -744,29 +748,29 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Flight Routing Section (DEPARTURE & ARRIVAL side by side) */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
                 {voucherData.flights.map((flight, idx) => (
                   <div key={idx} style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '4px 10px', fontWeight: 'bold', fontSize: '10.5px', letterSpacing: '0.5px' }}>
+                    <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 12px', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px' }}>
                       ✈ {flight.type === 'DEPARTURE' ? 'DEPARTURE DETAILS' : 'ARRIVAL DETAILS'}
                     </div>
-                    <table style={{ width: '100%', fontSize: '10.5px', borderCollapse: 'collapse', margin: '4px' }}>
+                    <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse', margin: '6px 4px' }}>
                       <tbody>
                         <tr>
-                          <td style={{ padding: '3px 6px', color: '#4b5563', width: '80px' }}><strong>Flight:</strong></td>
-                          <td style={{ padding: '3px 6px', fontWeight: 'bold' }}>{flight.flightNo || 'N/A'}</td>
+                          <td style={{ padding: '5px 8px', color: '#4b5563', width: '80px' }}><strong>Flight:</strong></td>
+                          <td style={{ padding: '5px 8px', fontWeight: 'bold' }}>{flight.flightNo || 'N/A'}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Sector:</strong></td>
-                          <td style={{ padding: '3px 6px', fontWeight: 'bold' }}>{flight.sector || 'N/A'}</td>
+                          <td style={{ padding: '5px 8px', color: '#4b5563' }}><strong>Sector:</strong></td>
+                          <td style={{ padding: '5px 8px', fontWeight: 'bold' }}>{flight.sector || 'N/A'}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Departure:</strong></td>
-                          <td style={{ padding: '3px 6px' }}>{flight.depDate || 'N/A'}</td>
+                          <td style={{ padding: '5px 8px', color: '#4b5563' }}><strong>Departure:</strong></td>
+                          <td style={{ padding: '5px 8px' }}>{flight.depDate || 'N/A'}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '3px 6px', color: '#4b5563' }}><strong>Arrival:</strong></td>
-                          <td style={{ padding: '3px 6px' }}>{flight.arrDate || 'N/A'}</td>
+                          <td style={{ padding: '5px 8px', color: '#4b5563' }}><strong>Arrival:</strong></td>
+                          <td style={{ padding: '5px 8px' }}>{flight.arrDate || 'N/A'}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -775,22 +779,22 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Accommodation Table */}
-              <div style={{ marginBottom: '15px' }}>
-                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   🏨 Accommodation Plan
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', border: '1.5px solid #0a2e5c' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #0a2e5c' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>City</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>Hotel Name</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>View</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Meal</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Conf #</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left' }}>Room Type</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Checkin</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Checkout</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center' }}>Nights</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left' }}>City</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left' }}>Hotel Name</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>View</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>Meal</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>Conf #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left' }}>Room Type</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>Checkin</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>Checkout</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center' }}>Nights</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -799,21 +803,21 @@ function UmrahVoucherGeneratorContent() {
                       const checkOutFormatted = stay.checkOut ? stay.checkOut.split('-').reverse().slice(0,2).join('-') + '-' + stay.checkOut.split('-')[0].slice(2) : '';
                       return (
                         <tr key={idx} style={{ backgroundColor: idx % 2 === 1 ? '#f8fafc' : '#ffffff' }}>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', fontWeight: 'bold' }}>{stay.city}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{stay.hotelName || 'N/A'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{stay.view}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{stay.mealPlan}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold' }}>{stay.hcn || '-'}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{stay.roomType}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkInFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{checkOutFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold' }}>{stay.totalNights}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', fontWeight: 'bold' }}>{stay.city}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{stay.hotelName || 'N/A'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{stay.view}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{stay.mealPlan}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>{stay.hcn || '-'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{stay.roomType}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkInFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkOutFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>{stay.totalNights}</td>
                         </tr>
                       );
                     })}
                     <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold' }}>
-                      <td colSpan={8} style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'right' }}>Total Nights:</td>
-                      <td style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'center', fontSize: '11px' }}>
+                      <td colSpan={8} style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'right' }}>Total Nights:</td>
+                      <td style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'center', fontSize: '13px' }}>
                         {voucherData.stays.reduce((acc, s) => acc + (parseInt(s.totalNights) || 0), 0)}
                       </td>
                     </tr>
@@ -822,61 +826,61 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Transport Detail Section */}
-              <div style={{ marginBottom: '15px' }}>
-                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   🚌 Transport Logistics
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', border: '1.5px solid #0a2e5c' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1.5px solid #0a2e5c' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '20%' }}>Travel Date</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '30%' }}>Transporter</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '20%' }}>Type</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '5px', textAlign: 'left', width: '30%' }}>Description</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left', width: '20%' }}>Travel Date</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left', width: '30%' }}>Transporter</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left', width: '20%' }}>Type</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '8px 10px', textAlign: 'left', width: '30%' }}>Description</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportTravelDate || 'As per Schedule'}</td>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '5px', fontWeight: 'bold' }}>{voucherData.transportTransporter || 'N/A'}</td>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportType || 'N/A'}</td>
-                      <td style={{ border: '1px solid #cbd5e1', padding: '5px' }}>{voucherData.transportDesc || 'N/A'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{voucherData.transportTravelDate || 'As per Schedule'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', fontWeight: 'bold' }}>{voucherData.transportTransporter || 'N/A'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{voucherData.transportType || 'N/A'}</td>
+                      <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{voucherData.transportDesc || 'N/A'}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               {/* Mutamers Manifest Table */}
-              <div style={{ marginBottom: '15px' }}>
-                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <div style={{ color: '#0a2e5c', fontWeight: 'bold', fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   👤 Pilgrims (Mutamers) list
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', border: '1.5px solid #0a2e5c' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', border: '1.5px solid #0a2e5c' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#0a2e5c', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>SNO</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '15%' }}>Passport</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '40%' }}>Mutamer Name</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>G</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '10%' }}>PAX</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'center', width: '5%' }}>Bed</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>Group #</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>Visa #</th>
-                      <th style={{ border: '1px solid #0a2e5c', padding: '4px', textAlign: 'left', width: '10%' }}>PNR</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'center', width: '5%' }}>SNO</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'left', width: '15%' }}>Passport</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'left', width: '40%' }}>Mutamer Name</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'center', width: '5%' }}>G</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'center', width: '10%' }}>PAX</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'center', width: '5%' }}>Bed</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'left', width: '10%' }}>Group #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'left', width: '10%' }}>Visa #</th>
+                      <th style={{ border: '1px solid #0a2e5c', padding: '7px 9px', textAlign: 'left', width: '10%' }}>PNR</th>
                     </tr>
                   </thead>
                   <tbody>
                     {voucherData.mutamers.map((mutamer, idx) => (
                       <tr key={idx} style={{ backgroundColor: idx % 2 === 1 ? '#f8fafc' : '#ffffff' }}>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{idx + 1}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: '500', fontFamily: 'monospace' }}>{mutamer.passportNo || 'N/A'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: 'bold' }}>{mutamer.name || 'N/A'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.gender}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.paxType}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', textAlign: 'center' }}>{mutamer.bed}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px' }}>{mutamer.groupNo || '-'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px' }}>{mutamer.visaNo || '-'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '4px', fontWeight: 'bold', fontFamily: 'monospace' }}>{mutamer.pnr || '-'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', textAlign: 'center' }}>{idx + 1}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', fontWeight: '500', fontFamily: 'monospace' }}>{mutamer.passportNo || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', fontWeight: 'bold' }}>{mutamer.name || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', textAlign: 'center' }}>{mutamer.gender}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', textAlign: 'center' }}>{mutamer.paxType}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', textAlign: 'center' }}>{mutamer.bed}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px' }}>{mutamer.groupNo || '-'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px' }}>{mutamer.visaNo || '-'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '7px 9px', fontWeight: 'bold', fontFamily: 'monospace' }}>{mutamer.pnr || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -884,18 +888,18 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Ground Support Contacts */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '15px', marginBottom: '15px', alignItems: 'start' }}>
-                <div style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', padding: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', marginBottom: '25px', alignItems: 'start' }}>
+                <div style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', padding: '10px 12px' }}>
                   <div><strong>Special Instructions:</strong></div>
-                  <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '11px', marginTop: '3px', textTransform: 'uppercase' }}>
+                  <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '12.5px', marginTop: '4px', textTransform: 'uppercase' }}>
                     ⚠️ {voucherData.specialInstructions || 'N/A'}
                   </div>
                 </div>
                 <div style={{ border: '1.5px solid #0a2e5c', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '4px 8px', fontWeight: 'bold', fontSize: '10px' }}>
+                  <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', fontWeight: 'bold', fontSize: '11.5px' }}>
                     📞 GROUND REPRESENTATIVES
                   </div>
-                  <div style={{ padding: '6px 8px', fontSize: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ padding: '8px 10px', fontSize: '11.5px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {voucherData.makkahContactName && (
                       <div>🕋 <strong>MAKKAH Support:</strong> {voucherData.makkahContactName} ({voucherData.makkahContactNo})</div>
                     )}
@@ -907,9 +911,9 @@ function UmrahVoucherGeneratorContent() {
               </div>
 
               {/* Urdu Instructions Block */}
-              <div className="urdu-instructions" style={{ border: '1.5px solid #0a2e5c', borderRadius: '5px', padding: '10px 14px', backgroundColor: '#f0f4fa', marginBottom: '15px' }}>
-                <div dir="rtl" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '10.5px', lineHeight: '1.6', color: '#0a2e5c', textAlign: 'right' }}>
-                  <strong style={{ display: 'block', fontSize: '12px', marginBottom: '6px', borderBottom: '1px solid #b9c9e3', paddingBottom: '3px' }}>ضروری ہدایات:-</strong>
+              <div className="urdu-instructions" style={{ border: '1.5px solid #0a2e5c', borderRadius: '5px', padding: '14px 18px', backgroundColor: '#f0f4fa', marginBottom: '25px' }}>
+                <div dir="rtl" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '12.5px', lineHeight: '1.65', color: '#0a2e5c', textAlign: 'right' }}>
+                  <strong style={{ display: 'block', fontSize: '14px', marginBottom: '8px', borderBottom: '1px solid #b9c9e3', paddingBottom: '4px' }}>ضروری ہدایات:-</strong>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px 20px' }}>
                     <div>
                       ⭐ سعودیہ میں معتمرین سے پاسپورٹ لینے کی کسی کو اجازت نہیں ہے۔ لہذا اپنا پاسپورٹ اپنے پاس سنبھال کے رکھیں۔ پاسپورٹ گم ہونے کی صورت میں آوٹ پاس اور ٹکٹ کے چارجز معتمر پر عائد ہونگے۔ <br />
@@ -925,26 +929,71 @@ function UmrahVoucherGeneratorContent() {
                       ⭐ سعودی قوانین اور پالیسی پر مکمل عملدرآمد کرنے کی ذمہ داری معتمرین پر عائد ہو گی۔ کسی بھی پریشانی کی صورت میں عازمین یہ ووچر پر درج شدہ سعودی اسٹاف کے نمبر پر رابطہ کریں۔
                     </div>
                   </div>
-                  <div style={{ marginTop: '5px', fontSize: '9.5px', borderTop: '1px dashed #cbd5e1', paddingTop: '4px', fontWeight: 'bold' }}>
+                  <div style={{ marginTop: '6px', fontSize: '11px', borderTop: '1px dashed #cbd5e1', paddingTop: '6px', fontWeight: 'bold' }}>
                     نوٹ: مندرجہ بالا ہدایات پر عملدرآمد کو یقینی بنائیں کو تاہی کی صورت میں ہونے والے کسی بھی نقصان کی ذمہ داری معتمرین پر ہوگی۔
                   </div>
                 </div>
               </div>
 
               {/* Sign off and Footer */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid #cbd5e1', paddingTop: '10px', marginTop: '10px' }}>
-                <div style={{ fontSize: '9.5px', color: '#64748b', maxWidth: '60%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid #cbd5e1', paddingTop: '14px', marginTop: '20px' }}>
+                <div style={{ fontSize: '11px', color: '#64748b', maxWidth: '60%' }}>
                   <strong>{voucherData.companyName}</strong> <br />
                   📍 {voucherData.officeAddress} | ✉ {voucherData.email} | 📞 {voucherData.phone}
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '10.5px' }}>
+                <div style={{ textAlign: 'right', fontSize: '12px' }}>
                   <div style={{ color: '#4b5563' }}>Authorized Signatory:</div>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#0a2e5c', textTransform: 'uppercase', marginTop: '2px' }}>{voucherData.authorizedPerson}</div>
-                  <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase' }}>RESERVATION DEPT</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '14.5px', color: '#0a2e5c', textTransform: 'uppercase', marginTop: '2px' }}>{voucherData.authorizedPerson}</div>
+                  <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>RESERVATION DEPT</div>
                 </div>
               </div>
 
             </div>
+
+            {/* PDF Action Buttons */}
+            <div className={`${styles.pdfActionButtons} no-print-bar`}>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#0a2e5c', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Printer size={18} /> Print Voucher
+              </button>
+              <button 
+                onClick={() => window.print()} 
+                className="btn" 
+                style={{ 
+                  padding: '12px 28px', 
+                  fontSize: '15px', 
+                  backgroundColor: '#2563eb', 
+                  color: '#ffffff', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  borderRadius: '6px', 
+                  border: 'none', 
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                }}
+              >
+                <Save size={18} /> Download PDF
+              </button>
+            </div>
+
           </div>
 
         </div>
