@@ -252,12 +252,12 @@
 /* Print CSS Media query */
 @media print {
   /* Hide local forms and controls */
-  .formCard, .previewToolbar, .btn {
+  .formCard, .stackedFormCard, .previewToolbar, .btn {
     display: none !important;
   }
   
   /* Reset container paddings */
-  .container, .splitLayout, .previewPanel {
+  .container, .splitLayout, .stackedLayout, .previewPanel, .stackedPreviewPanel {
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
@@ -266,8 +266,9 @@
     display: block !important;
   }
   
-  .splitLayout {
+  .splitLayout, .stackedLayout {
     grid-template-columns: 1fr !important;
+    display: block !important;
   }
   
   .voucherSheet {

@@ -450,7 +450,7 @@ function ETicketGeneratorContent() {
         <div className={styles.stackedLayout}>
           
           {/* LEFT: Form Panel */}
-          <div className={styles.stackedFormCard}>
+          <div className={`${styles.stackedFormCard} no-print-bar`}>
             
             {/* Search Saved Tickets */}
             <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', padding: '14px', marginBottom: '20px', backgroundColor: '#f8fafc' }}>
@@ -863,7 +863,7 @@ function ETicketGeneratorContent() {
 
           {/* RIGHT: Live print layout */}
           <div className={styles.stackedPreviewPanel}>
-            <div className={styles.previewToolbar} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
+            <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 FLIGHT TICKET PREVIEW (PDF VIEWER STYLE)</span>
               <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
                 <Printer size={14} /> Print PDF
