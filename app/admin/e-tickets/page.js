@@ -420,9 +420,14 @@ function ETicketGeneratorContent() {
             width: 100% !important;
             max-width: 100% !important;
             border: none !important;
-            padding: 0 !important;
+            padding: 1.6cm !important;
             margin: 0 !important;
             box-shadow: none !important;
+            box-sizing: border-box !important;
+          }
+          @page {
+            size: A4;
+            margin: 0 !important;
           }
         }
       `}</style>
@@ -871,53 +876,53 @@ function ETicketGeneratorContent() {
             </div>
 
             {/* Document sheet */}
-            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '35px 25px', fontSize: '11.5px', color: '#000000', lineHeight: '1.4', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
+            <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '45px 35px', fontSize: '13.5px', color: '#000000', lineHeight: '1.5', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
               
               {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '12px', marginBottom: '15px' }}>
-                <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '75px', width: 'auto', objectFit: 'contain' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '16px', marginBottom: '25px' }}>
+                <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
                 <div style={{ textAlign: 'right' }}>
-                  <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>E-Ticket Voucher</h1>
-                  <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: 'bold' }}>{ticketData.voucherNo || 'FLY-1001'}</span>
+                  <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>E-Ticket Voucher</h1>
+                  <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 'bold' }}>{ticketData.voucherNo || 'FLY-1001'}</span>
                 </div>
               </div>
 
               {/* Status Alert Box */}
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '6px', padding: '10px 12px', marginBottom: '15px' }}>
-                <span style={{ fontSize: '20px' }}>🟢</span>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '6px', padding: '14px 18px', marginBottom: '25px' }}>
+                <span style={{ fontSize: '22px' }}>🟢</span>
                 <div>
-                  <div style={{ fontWeight: 'bold', color: '#065f46', fontSize: '12px' }}>
+                  <div style={{ fontWeight: 'bold', color: '#065f46', fontSize: '14px' }}>
                     Your booking is {ticketData.status}
                   </div>
-                  <div style={{ fontSize: '10.5px', color: '#047857' }}>
+                  <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
                     Thank you for booking with us.
                   </div>
                 </div>
               </div>
 
               {/* Passenger Table */}
-              <div style={{ marginBottom: '15px' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: 'bold', margin: '0 0 6px 0', color: '#1e293b' }}>Passenger Details</h4>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', border: '1px solid #cbd5e1' }}>
+              <div style={{ marginBottom: '25px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0', color: '#1e293b' }}>Passenger Details</h4>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1px solid #cbd5e1' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#035a37', color: '#ffffff' }}>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>#</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'left', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passenger Name</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passport No</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>PNR</th>
-                      <th style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Status</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>#</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passenger Name</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passport No</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>PNR</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ticketData.passengers.map((p, idx) => (
                       <tr key={idx}>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center' }}>{idx + 1}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '5px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{idx + 1}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', fontWeight: 'bold', textTransform: 'uppercase' }}>
                           {p.title} {p.givenName} {p.surname}
                         </td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontFamily: 'monospace' }}>{p.passportNo || 'N/A'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', color: '#035a37' }}>{p.pnr || 'N/A'}</td>
-                        <td style={{ border: '1px solid #cbd5e1', padding: '5px', textAlign: 'center', fontWeight: 'bold', color: '#10b981', fontSize: '10px' }}>{p.status || 'CONFIRMED'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontFamily: 'monospace' }}>{p.passportNo || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', color: '#035a37' }}>{p.pnr || 'N/A'}</td>
+                        <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', color: '#10b981', fontSize: '11px' }}>{p.status || 'CONFIRMED'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -930,7 +935,7 @@ function ETicketGeneratorContent() {
                 const arr = parseAirportSelection(sector.to);
                 
                 return (
-                  <div key={idx} className={styles.ticketCard} style={{ marginBottom: '15px' }}>
+                  <div key={idx} className={styles.ticketCard} style={{ marginBottom: '25px' }}>
                     {/* Dark Green Departure Header */}
                     <div className={styles.ticketCardHeader} style={{ backgroundColor: '#035a37' }}>
                       ✈ DEPARTURE FROM {dep.city.toUpperCase()} {sector.flightNo}
@@ -942,7 +947,7 @@ function ETicketGeneratorContent() {
                         <div className={styles.routeCol}>
                           <div className={styles.routeDate}>{formatFlightDate(sector.depDate)}</div>
                           <div className={styles.routeTime}>{sector.depTime || '00:00'}</div>
-                          <div className={styles.routeCode} style={{ fontSize: '13px' }}>{dep.code}</div>
+                          <div className={styles.routeCode}>{dep.code}</div>
                           <div className={styles.routeCity}>{dep.city}</div>
                           <div className={styles.routeAirport}>{dep.airport}</div>
                         </div>
@@ -955,7 +960,7 @@ function ETicketGeneratorContent() {
                         <div className={styles.routeCol}>
                           <div className={styles.routeDate}>{formatFlightDate(sector.arrDate)}</div>
                           <div className={styles.routeTime}>{sector.arrTime || '00:00'}</div>
-                          <div className={styles.routeCode} style={{ fontSize: '13px' }}>{arr.code}</div>
+                          <div className={styles.routeCode}>{arr.code}</div>
                           <div className={styles.routeCity}>{arr.city}</div>
                           <div className={styles.routeAirport}>{arr.airport}</div>
                         </div>
