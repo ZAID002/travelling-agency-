@@ -234,6 +234,32 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.placeImgWrapper {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.placeImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.placeCard:hover .placeImg {
+  transform: scale(1.08);
+}
+
+.placeImgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0) 60%);
+  pointer-events: none;
+}
+
 .placeBadge {
   position: absolute;
   top: 12px;

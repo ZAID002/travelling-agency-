@@ -78,6 +78,66 @@ function UmrahVoucherGeneratorContent() {
     importantNotes: ''
   };
 
+  const sanitizeVoucherData = (data) => {
+    if (!data) return initialVoucherState;
+    return {
+      ...initialVoucherState,
+      ...data,
+      voucherNo: data.voucherNo ?? '',
+      status: data.status ?? 'Definite',
+      issueDate: data.issueDate ?? '',
+      packageCode: data.packageCode ?? '',
+      paxNo: data.paxNo ?? '',
+      bedsNo: data.bedsNo ?? '',
+      familyHead: data.familyHead ?? '',
+      ubNo: data.ubNo ?? '',
+      mNo: data.mNo ?? '',
+      transportTravelDate: data.transportTravelDate ?? '',
+      transportTransporter: data.transportTransporter ?? '',
+      transportType: data.transportType ?? '',
+      transportDesc: data.transportDesc ?? '',
+      specialInstructions: data.specialInstructions ?? '',
+      makkahContactName: data.makkahContactName ?? '',
+      makkahContactNo: data.makkahContactNo ?? '',
+      madinahContactName: data.madinahContactName ?? '',
+      madinahContactNo: data.madinahContactNo ?? '',
+      companyName: data.companyName ?? '',
+      officeAddress: data.officeAddress ?? '',
+      phone: data.phone ?? '',
+      email: data.email ?? '',
+      authorizedPerson: data.authorizedPerson ?? '',
+      importantNotes: data.importantNotes ?? '',
+      flights: (data.flights && data.flights.length > 0 ? data.flights : initialVoucherState.flights).map(f => ({
+        type: f.type ?? 'DEPARTURE',
+        flightNo: f.flightNo ?? '',
+        sector: f.sector ?? '',
+        depDate: f.depDate ?? '',
+        arrDate: f.arrDate ?? ''
+      })),
+      stays: (data.stays && data.stays.length > 0 ? data.stays : initialVoucherState.stays).map(s => ({
+        city: s.city ?? 'Makkah',
+        hotelName: s.hotelName ?? '',
+        view: s.view ?? '',
+        mealPlan: s.mealPlan ?? '',
+        hcn: s.hcn ?? '',
+        roomType: s.roomType ?? '',
+        checkIn: s.checkIn ?? '',
+        checkOut: s.checkOut ?? '',
+        totalNights: s.totalNights ?? 0
+      })),
+      mutamers: (data.mutamers && data.mutamers.length > 0 ? data.mutamers : initialVoucherState.mutamers).map(m => ({
+        passportNo: m.passportNo ?? '',
+        name: m.name ?? '',
+        gender: m.gender ?? 'M',
+        paxType: m.paxType ?? 'Adult',
+        bed: m.bed ?? 'Yes',
+        groupNo: m.groupNo ?? '',
+        visaNo: m.visaNo ?? '',
+        pnr: m.pnr ?? ''
+      }))
+    };
+  };
+
   const [voucherData, setVoucherData] = useState(initialVoucherState);
 
   // Search local database states
@@ -95,7 +155,7 @@ function UmrahVoucherGeneratorContent() {
           if (res.ok && data.length > 0) {
             const exactMatch = data.find(v => v.voucherNo === editVoucherNo);
             if (exactMatch) {
-              setVoucherData(exactMatch);
+              setVoucherData(sanitizeVoucherData(exactMatch));
             }
           }
         } catch (err) {
@@ -350,7 +410,7 @@ function UmrahVoucherGeneratorContent() {
                     <div
                       key={v._id}
                       onClick={() => {
-                        setVoucherData(v);
+                        setVoucherData(sanitizeVoucherData(v));
                         setSearchResults([]);
                       }}
                       style={{ padding: '6px 8px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', fontSize: '12px', display: 'flex', justifyContent: 'space-between', hover: { backgroundColor: '#f1f5f9' } }}
@@ -379,7 +439,7 @@ function UmrahVoucherGeneratorContent() {
                     type="text"
                     name="voucherNo"
                     required
-                    value={voucherData.voucherNo}
+                    value={voucherData.voucherNo || ''}
                     onChange={handleFieldChange}
                   />
                   <button type="button" onClick={generateRandomVoucher} className="btn btn-outline" style={{ padding: 8 }}>
@@ -389,25 +449,25 @@ function UmrahVoucherGeneratorContent() {
               </div>
               <div className={styles.formGroup}>
                 <label>Voucher Date</label>
-                <input type="text" name="issueDate" value={voucherData.issueDate} onChange={handleFieldChange} />
+                <input type="text" name="issueDate" value={voucherData.issueDate || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Package Code</label>
-                <input type="text" name="packageCode" value={voucherData.packageCode} onChange={handleFieldChangeUpper} />
+                <input type="text" name="packageCode" value={voucherData.packageCode || ''} onChange={handleFieldChangeUpper} />
               </div>
             </div>
             <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
                 <label>PAX Summary (e.g. 5 (A:5,C:0,I:0))</label>
-                <input type="text" name="paxNo" value={voucherData.paxNo} onChange={handleFieldChange} />
+                <input type="text" name="paxNo" value={voucherData.paxNo || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Beds count</label>
-                <input type="text" name="bedsNo" value={voucherData.bedsNo} onChange={handleFieldChange} />
+                <input type="text" name="bedsNo" value={voucherData.bedsNo || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Booking Status</label>
-                <select name="status" value={voucherData.status} onChange={handleFieldChange}>
+                <select name="status" value={voucherData.status || 'Definite'} onChange={handleFieldChange}>
                   <option value="Definite">Definite</option>
                   <option value="Tentative">Tentative</option>
                   <option value="Confirmed">Confirmed</option>
@@ -418,15 +478,15 @@ function UmrahVoucherGeneratorContent() {
             <div className={styles.formGrid3} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
                 <label>Family Head Name</label>
-                <input type="text" name="familyHead" value={voucherData.familyHead} onChange={handleFieldChangeUpper} />
+                <input type="text" name="familyHead" value={voucherData.familyHead || ''} onChange={handleFieldChangeUpper} />
               </div>
               <div className={styles.formGroup}>
                 <label>UB Number</label>
-                <input type="text" name="ubNo" value={voucherData.ubNo} onChange={handleFieldChangeUpper} />
+                <input type="text" name="ubNo" value={voucherData.ubNo || ''} onChange={handleFieldChangeUpper} />
               </div>
               <div className={styles.formGroup}>
                 <label>MNo (optional)</label>
-                <input type="text" name="mNo" value={voucherData.mNo} onChange={handleFieldChangeUpper} />
+                <input type="text" name="mNo" value={voucherData.mNo || ''} onChange={handleFieldChangeUpper} />
               </div>
             </div>
 
@@ -440,19 +500,19 @@ function UmrahVoucherGeneratorContent() {
                 <div className={styles.formGrid4}>
                   <div className={styles.formGroup}>
                     <label>Flight No</label>
-                    <input type="text" value={flight.flightNo} onChange={(e) => handleFlightChange(idx, 'flightNo', e.target.value)} />
+                    <input type="text" value={flight.flightNo || ''} onChange={(e) => handleFlightChange(idx, 'flightNo', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Sector (e.g. KHI-JED)</label>
-                    <input type="text" value={flight.sector} onChange={(e) => handleFlightChange(idx, 'sector', e.target.value)} />
+                    <input type="text" value={flight.sector || ''} onChange={(e) => handleFlightChange(idx, 'sector', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Departure Date/Time</label>
-                    <input type="text" value={flight.depDate} placeholder="e.g. 05-JUL 03:30" onChange={(e) => handleFlightChange(idx, 'depDate', e.target.value)} />
+                    <input type="text" value={flight.depDate || ''} placeholder="e.g. 05-JUL 03:30" onChange={(e) => handleFlightChange(idx, 'depDate', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Arrival Date/Time</label>
-                    <input type="text" value={flight.arrDate} placeholder="e.g. 05-JUL 06:05" onChange={(e) => handleFlightChange(idx, 'arrDate', e.target.value)} />
+                    <input type="text" value={flight.arrDate || ''} placeholder="e.g. 05-JUL 06:05" onChange={(e) => handleFlightChange(idx, 'arrDate', e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -478,7 +538,7 @@ function UmrahVoucherGeneratorContent() {
                 <div className={styles.formGrid3}>
                   <div className={styles.formGroup}>
                     <label>City</label>
-                    <select value={stay.city} onChange={(e) => handleStayChange(index, 'city', e.target.value)}>
+                    <select value={stay.city || 'Makkah'} onChange={(e) => handleStayChange(index, 'city', e.target.value)}>
                       <option value="Makkah">Makkah</option>
                       <option value="Medinah">Medinah</option>
                       <option value="Jeddah">Jeddah</option>
@@ -486,39 +546,39 @@ function UmrahVoucherGeneratorContent() {
                   </div>
                   <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
                     <label>Hotel Name</label>
-                    <input type="text" value={stay.hotelName} onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())} />
+                    <input type="text" value={stay.hotelName || ''} onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())} />
                   </div>
                 </div>
                 <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
                   <div className={styles.formGroup}>
                     <label>Room View</label>
-                    <input type="text" value={stay.view} onChange={(e) => handleStayChange(index, 'view', e.target.value)} />
+                    <input type="text" value={stay.view || ''} onChange={(e) => handleStayChange(index, 'view', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <input type="text" value={stay.mealPlan} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)} />
+                    <input type="text" value={stay.mealPlan || ''} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <input type="text" value={stay.roomType} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)} />
+                    <input type="text" value={stay.roomType || ''} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)} />
                   </div>
                 </div>
                 <div className={styles.formGrid4} style={{ marginTop: '6px' }}>
                   <div className={styles.formGroup}>
                     <label>Check In</label>
-                    <input type="date" value={stay.checkIn} onChange={(e) => handleStayChange(index, 'checkIn', e.target.value)} />
+                    <input type="date" value={stay.checkIn || ''} onChange={(e) => handleStayChange(index, 'checkIn', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Check Out</label>
-                    <input type="date" value={stay.checkOut} onChange={(e) => handleStayChange(index, 'checkOut', e.target.value)} />
+                    <input type="date" value={stay.checkOut || ''} onChange={(e) => handleStayChange(index, 'checkOut', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Nights</label>
-                    <input type="number" readOnly style={{ backgroundColor: '#f1f5f9' }} value={stay.totalNights} />
+                    <input type="number" readOnly style={{ backgroundColor: '#f1f5f9' }} value={stay.totalNights || 0} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Conf # (optional)</label>
-                    <input type="text" placeholder="HCN / Confirmation No." value={stay.hcn} onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())} />
+                    <input type="text" placeholder="HCN / Confirmation No." value={stay.hcn || ''} onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())} />
                   </div>
                 </div>
               </div>
@@ -531,19 +591,19 @@ function UmrahVoucherGeneratorContent() {
             <div className={styles.formGrid4} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
                 <label>Travel Date</label>
-                <input type="text" name="transportTravelDate" value={voucherData.transportTravelDate} placeholder="e.g. 05-JUL" onChange={handleFieldChange} />
+                <input type="text" name="transportTravelDate" value={voucherData.transportTravelDate || ''} placeholder="e.g. 05-JUL" onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Transporter</label>
-                <input type="text" name="transportTransporter" value={voucherData.transportTransporter} onChange={handleFieldChange} />
+                <input type="text" name="transportTransporter" value={voucherData.transportTransporter || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Transport Type</label>
-                <input type="text" name="transportType" value={voucherData.transportType} onChange={handleFieldChange} />
+                <input type="text" name="transportType" value={voucherData.transportType || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Description</label>
-                <input type="text" name="transportDesc" value={voucherData.transportDesc} onChange={handleFieldChange} />
+                <input type="text" name="transportDesc" value={voucherData.transportDesc || ''} onChange={handleFieldChange} />
               </div>
             </div>
 
@@ -567,24 +627,24 @@ function UmrahVoucherGeneratorContent() {
                 <div className={styles.formGrid3}>
                   <div className={styles.formGroup}>
                     <label>Passport No</label>
-                    <input type="text" value={mutamer.passportNo} onChange={(e) => handleMutamerChange(index, 'passportNo', e.target.value)} />
+                    <input type="text" value={mutamer.passportNo || ''} onChange={(e) => handleMutamerChange(index, 'passportNo', e.target.value)} />
                   </div>
                   <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
                     <label>Mutamer Name</label>
-                    <input type="text" value={mutamer.name} onChange={(e) => handleMutamerChange(index, 'name', e.target.value.toUpperCase())} />
+                    <input type="text" value={mutamer.name || ''} onChange={(e) => handleMutamerChange(index, 'name', e.target.value.toUpperCase())} />
                   </div>
                 </div>
                 <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
                   <div className={styles.formGroup}>
                     <label>Gender</label>
-                    <select value={mutamer.gender} onChange={(e) => handleMutamerChange(index, 'gender', e.target.value)}>
+                    <select value={mutamer.gender || 'M'} onChange={(e) => handleMutamerChange(index, 'gender', e.target.value)}>
                       <option value="M">Male</option>
                       <option value="F">Female</option>
                     </select>
                   </div>
                   <div className={styles.formGroup}>
                     <label>PAX Type</label>
-                    <select value={mutamer.paxType} onChange={(e) => handleMutamerChange(index, 'paxType', e.target.value)}>
+                    <select value={mutamer.paxType || 'Adult'} onChange={(e) => handleMutamerChange(index, 'paxType', e.target.value)}>
                       <option value="Adult">Adult</option>
                       <option value="Child">Child</option>
                       <option value="Infant">Infant</option>
@@ -592,7 +652,7 @@ function UmrahVoucherGeneratorContent() {
                   </div>
                   <div className={styles.formGroup}>
                     <label>Bed Included</label>
-                    <select value={mutamer.bed} onChange={(e) => handleMutamerChange(index, 'bed', e.target.value)}>
+                    <select value={mutamer.bed || 'Yes'} onChange={(e) => handleMutamerChange(index, 'bed', e.target.value)}>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -601,15 +661,15 @@ function UmrahVoucherGeneratorContent() {
                 <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
                   <div className={styles.formGroup}>
                     <label>Group No</label>
-                    <input type="text" value={mutamer.groupNo} onChange={(e) => handleMutamerChange(index, 'groupNo', e.target.value)} />
+                    <input type="text" value={mutamer.groupNo || ''} onChange={(e) => handleMutamerChange(index, 'groupNo', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Visa #</label>
-                    <input type="text" value={mutamer.visaNo} onChange={(e) => handleMutamerChange(index, 'visaNo', e.target.value)} />
+                    <input type="text" value={mutamer.visaNo || ''} onChange={(e) => handleMutamerChange(index, 'visaNo', e.target.value)} />
                   </div>
                   <div className={styles.formGroup}>
                     <label>PNR</label>
-                    <input type="text" value={mutamer.pnr} onChange={(e) => handleMutamerChange(index, 'pnr', e.target.value)} />
+                    <input type="text" value={mutamer.pnr || ''} onChange={(e) => handleMutamerChange(index, 'pnr', e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -621,29 +681,29 @@ function UmrahVoucherGeneratorContent() {
             </div>
             <div className={styles.formGroup} style={{ marginTop: '10px' }}>
               <label>Special Instructions (Hijaz Muqadas pax, etc.)</label>
-              <input type="text" name="specialInstructions" value={voucherData.specialInstructions} onChange={handleFieldChange} />
+              <input type="text" name="specialInstructions" value={voucherData.specialInstructions || ''} onChange={handleFieldChange} />
             </div>
             <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
               <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
                 <strong style={{ fontSize: '11px', color: '#0a2e5c', display: 'block', marginBottom: '6px' }}>Makkah Hotel Contact</strong>
                 <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
                   <label>Contact Name</label>
-                  <input type="text" name="makkahContactName" value={voucherData.makkahContactName} onChange={handleFieldChange} />
+                  <input type="text" name="makkahContactName" value={voucherData.makkahContactName || ''} onChange={handleFieldChange} />
                 </div>
                 <div className={styles.formGroup}>
                   <label>WhatsApp No.</label>
-                  <input type="text" name="makkahContactNo" value={voucherData.makkahContactNo} onChange={handleFieldChange} />
+                  <input type="text" name="makkahContactNo" value={voucherData.makkahContactNo || ''} onChange={handleFieldChange} />
                 </div>
               </div>
               <div style={{ border: '1px solid #e2e8f0', borderRadius: '6px', padding: '10px' }}>
                 <strong style={{ fontSize: '11px', color: '#0a2e5c', display: 'block', marginBottom: '6px' }}>Madinah Hotel Contact</strong>
                 <div className={styles.formGroup} style={{ marginBottom: '6px' }}>
                   <label>Contact Name</label>
-                  <input type="text" name="madinahContactName" value={voucherData.madinahContactName} onChange={handleFieldChange} />
+                  <input type="text" name="madinahContactName" value={voucherData.madinahContactName || ''} onChange={handleFieldChange} />
                 </div>
                 <div className={styles.formGroup}>
                   <label>WhatsApp No.</label>
-                  <input type="text" name="madinahContactNo" value={voucherData.madinahContactNo} onChange={handleFieldChange} />
+                  <input type="text" name="madinahContactNo" value={voucherData.madinahContactNo || ''} onChange={handleFieldChange} />
                 </div>
               </div>
             </div>
@@ -655,26 +715,26 @@ function UmrahVoucherGeneratorContent() {
             <div className={styles.formGrid2} style={{ marginTop: '10px' }}>
               <div className={styles.formGroup}>
                 <label>Company Name</label>
-                <input type="text" name="companyName" value={voucherData.companyName} onChange={handleFieldChange} />
+                <input type="text" name="companyName" value={voucherData.companyName || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Office Address</label>
-                <input type="text" name="officeAddress" value={voucherData.officeAddress} onChange={handleFieldChange} />
+                <input type="text" name="officeAddress" value={voucherData.officeAddress || ''} onChange={handleFieldChange} />
               </div>
             </div>
             <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
               <div className={styles.formGroup}>
                 <label>WhatsApp</label>
-                <input type="text" name="phone" value={voucherData.phone} onChange={handleFieldChange} />
+                <input type="text" name="phone" value={voucherData.phone || ''} onChange={handleFieldChange} />
               </div>
               <div className={styles.formGroup}>
                 <label>Email</label>
-                <input type="text" name="email" value={voucherData.email} onChange={handleFieldChange} />
+                <input type="text" name="email" value={voucherData.email || ''} onChange={handleFieldChange} />
               </div>
             </div>
             <div className={styles.formGroup} style={{ marginTop: '8px' }}>
               <label>Authorized Signatory</label>
-              <input type="text" name="authorizedPerson" value={voucherData.authorizedPerson} onChange={handleFieldChangeUpper} />
+              <input type="text" name="authorizedPerson" value={voucherData.authorizedPerson || ''} onChange={handleFieldChangeUpper} />
             </div>
 
           </div>

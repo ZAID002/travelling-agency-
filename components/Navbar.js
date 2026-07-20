@@ -58,6 +58,20 @@ export default function Navbar() {
               >
                 Hotels
               </Link>
+              <Link 
+                href="/admin/maheen-hotel" 
+                className={`${styles.link} ${isActive('/admin/maheen-hotel') ? styles.active : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Umrah Vouchers
+              </Link>
+              <Link 
+                href="/admin/invoices" 
+                className={`${styles.link} ${isActive('/admin/invoices') ? styles.active : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Invoices
+              </Link>
               <button 
                 onClick={async () => {
                   setIsOpen(false);
