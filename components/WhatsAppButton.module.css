@@ -1,8 +1,8 @@
 .wrapper {
   position: fixed;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  right: calc(20px + env(safe-area-inset-right, 0px));
-  z-index: 99999;
+  bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  right: max(20px, env(safe-area-inset-right, 20px));
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -12,7 +12,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  max-width: calc(100vw - 32px);
 }
 
 .wrapper * {
@@ -124,10 +123,10 @@
 /* Complete Mobile View Optimizations */
 @media (max-width: 768px) {
   .wrapper {
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    right: calc(16px + env(safe-area-inset-right, 0px));
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    right: max(16px, env(safe-area-inset-right, 16px));
     gap: 0;
-    max-width: calc(100vw - 24px);
+    max-width: calc(100vw - 32px);
   }
   
   .tooltip {

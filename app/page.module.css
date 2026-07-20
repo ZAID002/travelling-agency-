@@ -502,8 +502,33 @@
 }
 
 @media (max-width: 768px) {
+  .hero {
+    padding: 36px 16px 44px 16px;
+  }
+
+  .heroLogo {
+    margin-bottom: 16px;
+  }
+
+  .largeLogo {
+    max-width: 210px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 5px 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
   .title {
-    font-size: 32px;
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    margin-bottom: 24px;
   }
   
   .heroActions {
