@@ -1,6 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata = {
   title: "Fly To Way | Premium Pilgrimage & Travel Management",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
         <main style={{ flex: 1 }}>
           {children}
         </main>
+        <WhatsAppButton />
         <Footer />
       </body>
     </html>
