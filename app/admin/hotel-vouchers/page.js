@@ -1116,7 +1116,7 @@ function HotelVoucherGeneratorContent() {
                         RESERVATION
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right', fontSize: '10.5px', color: '#64748b' }}>
+                    <div style={{ textAlign: 'right', fontSize: '10.5px', color: '#0a2e5c', fontWeight: 'bold', fontStyle: 'italic' }}>
                       Thank you for booking with us!
                     </div>
                   </div>
