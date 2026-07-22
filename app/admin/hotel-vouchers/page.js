@@ -821,12 +821,12 @@ function HotelVoucherGeneratorContent() {
               const isMulti = stayCount > 1;
               const isLargeMulti = stayCount >= 3;
 
-              const sheetPadding = isLargeMulti ? '16px 20px 12px 20px' : isMulti ? '24px 24px 16px 24px' : '36px 32px 24px 32px';
-              const logoH = isLargeMulti ? '70px' : isMulti ? '90px' : '120px';
-              const sectionMb = isLargeMulti ? '8px' : isMulti ? '12px' : '18px';
-              const cellPad = isLargeMulti ? '3px 5px' : isMulti ? '5px 6px' : '7px 8px';
-              const thPad = isLargeMulti ? '4px 5px' : isMulti ? '6px 6px' : '8px 8px';
-              const cardPad = isLargeMulti ? '6px 8px' : isMulti ? '8px 10px' : '10px 12px';
+              const sheetPadding = isLargeMulti ? '16px 20px 12px 20px' : isMulti ? '24px 24px 16px 24px' : '42px 34px 28px 34px';
+              const logoH = isLargeMulti ? '70px' : isMulti ? '90px' : '135px';
+              const sectionMb = isLargeMulti ? '8px' : isMulti ? '14px' : '26px';
+              const cellPad = isLargeMulti ? '3px 5px' : isMulti ? '5px 7px' : '9px 10px';
+              const thPad = isLargeMulti ? '4px 5px' : isMulti ? '6px 6px' : '10px 10px';
+              const cardPad = isLargeMulti ? '6px 8px' : isMulti ? '8px 10px' : '12px 14px';
 
               return (
                 <div id="voucher-print" className={styles.voucherSheet} style={{
