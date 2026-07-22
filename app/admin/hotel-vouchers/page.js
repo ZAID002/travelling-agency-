@@ -786,6 +786,26 @@ function HotelVoucherGeneratorContent() {
           <div className={styles.stackedPreviewPanel}>
             <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 CONFIRMATION SHEET PREVIEW (PDF VIEWER STYLE)</span>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="btn"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                <Printer size={14} /> Print / Save PDF
+              </button>
             </div>
 
             {/* Document sheet */}
@@ -852,6 +872,7 @@ function HotelVoucherGeneratorContent() {
                       <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Meal Plan</th>
                       <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check In</th>
                       <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>Check Out</th>
+                      <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#0f4c81', color: '#ffffff' }}>HCN #</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -894,13 +915,14 @@ function HotelVoucherGeneratorContent() {
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>{stay.mealPlan}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkInFormatted}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkOutFormatted}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', fontFamily: 'monospace' }}>{stay.hcn || '-'}</td>
                         </tr>
                       );
                     })}
                     
                     {/* Nights Aggregation Bar */}
                     <tr style={{ backgroundColor: '#0f4c81', color: '#ffffff' }}>
-                      <td colSpan={8} style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>
+                      <td colSpan={9} style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>
                         TOTAL NIGHTS:{' '}
                         <span style={{ backgroundColor: '#ffffff', color: '#0f4c81', padding: '3px 10px', borderRadius: '50px', marginLeft: '6px', fontWeight: '900', fontSize: '12px' }}>
                           {voucherData.stays.reduce((acc, s) => acc + (parseInt(s.totalNights) || 0), 0)}
