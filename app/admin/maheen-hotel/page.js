@@ -4,9 +4,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   Plane, Plus, Trash2, Printer, Save, RefreshCw, 
-  ArrowLeft, Search, User, FileText, Calendar, Landmark, Info
+  ArrowLeft, Search, User, FileText, Calendar, Landmark, Info, CheckCircle2
 } from 'lucide-react';
 import styles from '../generator.module.css';
+import HotelSelect from '@/components/HotelSelect';
 
 function UmrahVoucherGeneratorContent() {
   const searchParams = useSearchParams();
@@ -145,6 +146,20 @@ function UmrahVoucherGeneratorContent() {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
 
+  const fetchNextVoucherNumber = async () => {
+    try {
+      const res = await fetch('/api/vouchers/maheen?nextNumber=true');
+      const data = await res.json();
+      if (res.ok && data.nextVoucherNo) {
+        setVoucherData(prev => ({ ...prev, voucherNo: data.nextVoucherNo }));
+      } else {
+        setVoucherData(prev => ({ ...prev, voucherNo: 'FTW-8001' }));
+      }
+    } catch (err) {
+      setVoucherData(prev => ({ ...prev, voucherNo: 'FTW-8001' }));
+    }
+  };
+
   // Fetch details if editing
   useEffect(() => {
     if (editVoucherNo) {
@@ -164,14 +179,9 @@ function UmrahVoucherGeneratorContent() {
       };
       fetchVoucher();
     } else {
-      generateRandomVoucher();
+      fetchNextVoucherNumber();
     }
   }, [editVoucherNo]);
-
-  const generateRandomVoucher = () => {
-    const rand = Math.floor(100000 + Math.random() * 900000);
-    setVoucherData(prev => ({ ...prev, voucherNo: `M-${rand}` }));
-  };
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -268,11 +278,8 @@ function UmrahVoucherGeneratorContent() {
 
   // Reset form to defaults
   const handleReset = () => {
-    const rand = Math.floor(100000 + Math.random() * 900000);
-    setVoucherData({
-      ...initialVoucherState,
-      voucherNo: `M-${rand}`
-    });
+    setVoucherData(initialVoucherState);
+    fetchNextVoucherNumber();
     setSearchResults([]);
     setSearchQuery('');
   };
@@ -312,7 +319,6 @@ function UmrahVoucherGeneratorContent() {
 
       if (res.ok) {
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
       } else {
         const errData = await res.json();
         setError(errData.error || 'Failed to save Umrah Voucher.');
@@ -376,9 +382,6 @@ function UmrahVoucherGeneratorContent() {
             <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
               <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Voucher'}
             </button>
-            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-              <Printer size={14} style={{ marginRight: 6 }} /> Generate Voucher PDF
-            </button>
           </div>
         </div>
 
@@ -424,8 +427,130 @@ function UmrahVoucherGeneratorContent() {
               )}
             </div>
 
-            {error && <div className={styles.errorBox} style={{ margin: '0 0 15px 0' }}>{error}</div>}
-            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center', marginBottom: 15 }}>Voucher saved successfully in database!</div>}
+            {/* Form Submission Confirmation Modal Popup */}
+            {saveSuccess && (
+              <div
+                className="no-print-bar"
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  zIndex: 9999,
+                  backgroundColor: 'rgba(15, 23, 42, 0.7)',
+                  backdropFilter: 'blur(4px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px'
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '12px',
+                    width: '100%',
+                    maxWidth: '480px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                    padding: '30px 24px',
+                    position: 'relative'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      backgroundColor: '#d1fae5',
+                      color: '#10b981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px auto'
+                    }}
+                  >
+                    <CheckCircle2 size={36} />
+                  </div>
+
+                  <h2 style={{ margin: '0 0 8px 0', fontSize: '20px', color: '#0f172a', fontWeight: '800' }}>
+                    Form Submitted Successfully!
+                  </h2>
+                  <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#475569' }}>
+                    Voucher <strong>{voucherData.voucherNo}</strong> has been saved in database and is ready to print or download.
+                  </p>
+
+                  {/* Action Buttons inside Popup Modal */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.print();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: '#ef4444',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 10px rgba(239, 68, 68, 0.25)'
+                      }}
+                    >
+                      <Printer size={18} /> Print / Download Voucher PDF
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSaveSuccess(false);
+                        handleReset();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        backgroundColor: '#0a2e5c',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Plus size={16} /> Create Another Voucher
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSaveSuccess(false)}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        backgroundColor: 'transparent',
+                        color: '#64748b',
+                        fontWeight: '600',
+                        fontSize: '13px',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Close Window
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* 1. Voucher Details */}
             <div className={styles.formSectionTitle} style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: '6px 10px', borderRadius: '4px' }}>
@@ -442,7 +567,7 @@ function UmrahVoucherGeneratorContent() {
                     value={voucherData.voucherNo || ''}
                     onChange={handleFieldChange}
                   />
-                  <button type="button" onClick={generateRandomVoucher} className="btn btn-outline" style={{ padding: 8 }}>
+                  <button type="button" onClick={fetchNextVoucherNumber} className="btn btn-outline" style={{ padding: 8, title: 'Fetch next serial voucher number' }}>
                     <RefreshCw size={12} />
                   </button>
                 </div>
@@ -546,7 +671,17 @@ function UmrahVoucherGeneratorContent() {
                   </div>
                   <div className={styles.formGroup} style={{ gridColumn: 'span 2' }}>
                     <label>Hotel Name</label>
-                    <input type="text" value={stay.hotelName || ''} onChange={(e) => handleStayChange(index, 'hotelName', e.target.value.toUpperCase())} />
+                    <HotelSelect
+                      value={stay.hotelName || ''}
+                      city={stay.city === 'Medinah' ? 'Madinah' : stay.city}
+                      onChange={(val, cityVal) => {
+                        handleStayChange(index, 'hotelName', val);
+                        if (cityVal && cityVal !== 'General') {
+                          handleStayChange(index, 'city', cityVal === 'Madinah' ? 'Medinah' : cityVal);
+                        }
+                      }}
+                      placeholder="Select or type hotel name..."
+                    />
                   </div>
                 </div>
                 <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
@@ -737,15 +872,45 @@ function UmrahVoucherGeneratorContent() {
               <input type="text" name="authorizedPerson" value={voucherData.authorizedPerson || ''} onChange={handleFieldChangeUpper} />
             </div>
 
+            {/* Submit Section at Bottom of Form */}
+            <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px dashed #cbd5e1', display: 'flex', gap: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="btn btn-outline"
+                style={{ padding: '10px 18px', fontWeight: 'bold' }}
+              >
+                Reset Form
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                style={{
+                  padding: '12px 28px',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                }}
+              >
+                <Save size={18} /> {saving ? 'Submitting Form...' : 'Submit Voucher'}
+              </button>
+            </div>
+
           </div>
 
           {/* RIGHT: Live print layout */}
           <div className={styles.stackedPreviewPanel}>
             <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 UMRAH VOUCHER SHEET PREVIEW (PDF VIEWER STYLE)</span>
-              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
-                <Printer size={14} /> Print PDF
-              </button>
             </div>
 
             {/* Document sheet */}
@@ -984,49 +1149,7 @@ function UmrahVoucherGeneratorContent() {
 
             </div>
 
-            {/* PDF Action Buttons */}
-            <div className={`${styles.pdfActionButtons} no-print-bar`}>
-              <button 
-                onClick={() => window.print()} 
-                className="btn" 
-                style={{ 
-                  padding: '12px 28px', 
-                  fontSize: '15px', 
-                  backgroundColor: '#0a2e5c', 
-                  color: '#ffffff', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  borderRadius: '6px', 
-                  border: 'none', 
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <Printer size={18} /> Print Voucher
-              </button>
-              <button 
-                onClick={() => window.print()} 
-                className="btn" 
-                style={{ 
-                  padding: '12px 28px', 
-                  fontSize: '15px', 
-                  backgroundColor: '#2563eb', 
-                  color: '#ffffff', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  borderRadius: '6px', 
-                  border: 'none', 
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <Save size={18} /> Download PDF
-              </button>
-            </div>
+
 
           </div>
 

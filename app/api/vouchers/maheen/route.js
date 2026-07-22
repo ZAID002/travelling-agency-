@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import MaheenVoucher from '@/lib/models/MaheenVoucher';
+import HotelVoucher from '@/lib/models/HotelVoucher';
 import { verifyToken } from '@/lib/auth';
 
 function getAuthUser(request) {
@@ -19,6 +20,30 @@ export async function GET(request) {
     await dbConnect();
     const url = new URL(request.url);
     const search = url.searchParams.get('search');
+    const nextNumber = url.searchParams.get('nextNumber') === 'true';
+
+    if (nextNumber) {
+      const hotelVouchers = await HotelVoucher.find({ voucherNo: /^FTW-/i }, 'voucherNo');
+      const maheenVouchers = await MaheenVoucher.find({ voucherNo: /^FTW-/i }, 'voucherNo');
+      
+      let maxNum = 8000;
+      const checkVoucher = (v) => {
+        if (!v || !v.voucherNo) return;
+        const match = v.voucherNo.match(/^FTW-(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (!isNaN(num) && num > maxNum) {
+            maxNum = num;
+          }
+        }
+      };
+
+      hotelVouchers.forEach(checkVoucher);
+      maheenVouchers.forEach(checkVoucher);
+
+      const nextVoucherNo = `FTW-${maxNum + 1}`;
+      return NextResponse.json({ nextVoucherNo });
+    }
     
     let query = {};
     if (search) {

@@ -4,9 +4,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   FileText, Plus, Trash2, Printer, Save, RefreshCw, 
-  User, ArrowLeft, Calendar, Search, DollarSign, Building
+  User, ArrowLeft, Calendar, Search, DollarSign, Building, CheckCircle2
 } from 'lucide-react';
 import styles from '../generator.module.css';
+import HotelSelect from '@/components/HotelSelect';
 
 function InvoiceGeneratorContent() {
   const searchParams = useSearchParams();
@@ -244,7 +245,6 @@ function InvoiceGeneratorContent() {
 
       if (res.ok) {
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
       } else {
         const errData = await res.json();
         setError(errData.error || 'Failed to save invoice.');
@@ -309,9 +309,6 @@ function InvoiceGeneratorContent() {
             <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0f4c81', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
               <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Invoice'}
             </button>
-            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-              <Printer size={14} style={{ marginRight: 6 }} /> Generate Invoice PDF
-            </button>
           </div>
         </div>
 
@@ -357,8 +354,130 @@ function InvoiceGeneratorContent() {
               )}
             </div>
 
-            {error && <div className={styles.errorBox} style={{ margin: '0 0 15px 0' }}>{error}</div>}
-            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center', marginBottom: 15 }}>Invoice saved successfully in database!</div>}
+            {/* Form Submission Confirmation Modal Popup */}
+            {saveSuccess && (
+              <div
+                className="no-print-bar"
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  zIndex: 9999,
+                  backgroundColor: 'rgba(15, 23, 42, 0.7)',
+                  backdropFilter: 'blur(4px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px'
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '12px',
+                    width: '100%',
+                    maxWidth: '480px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                    padding: '30px 24px',
+                    position: 'relative'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      backgroundColor: '#d1fae5',
+                      color: '#10b981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px auto'
+                    }}
+                  >
+                    <CheckCircle2 size={36} />
+                  </div>
+
+                  <h2 style={{ margin: '0 0 8px 0', fontSize: '20px', color: '#0f172a', fontWeight: '800' }}>
+                    Form Submitted Successfully!
+                  </h2>
+                  <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#475569' }}>
+                    Invoice <strong>#{invoiceData.invoiceNo}</strong> has been saved in database and is ready to print or download.
+                  </p>
+
+                  {/* Action Buttons inside Popup Modal */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.print();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: '#ef4444',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 10px rgba(239, 68, 68, 0.25)'
+                      }}
+                    >
+                      <Printer size={18} /> Print / Download Invoice PDF
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSaveSuccess(false);
+                        handleReset();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        backgroundColor: '#0f4c81',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Plus size={16} /> Create Another Invoice
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSaveSuccess(false)}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        backgroundColor: 'transparent',
+                        color: '#64748b',
+                        fontWeight: '600',
+                        fontSize: '13px',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Close Window
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* 1. Invoice Details */}
             <div className={styles.formSectionTitle} style={{ backgroundColor: '#0f4c81', color: '#ffffff', padding: '6px 10px', borderRadius: '4px' }}>
@@ -431,7 +550,18 @@ function InvoiceGeneratorContent() {
             <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
               <div className={styles.formGroup}>
                 <label>Hotel Name</label>
-                <input type="text" name="hotelName" value={invoiceData.hotelName} onChange={handleFieldChangeUpper} />
+                <HotelSelect
+                  value={invoiceData.hotelName || ''}
+                  city={invoiceData.location}
+                  onChange={(val, cityVal) => {
+                    setInvoiceData(prev => ({
+                      ...prev,
+                      hotelName: val,
+                      location: (cityVal && cityVal !== 'General') ? cityVal.toUpperCase() : prev.location
+                    }));
+                  }}
+                  placeholder="Select or type hotel name..."
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>Hotel City (e.g. MAKKAH / MADINAH)</label>
@@ -613,6 +743,37 @@ function InvoiceGeneratorContent() {
                 <label>Reservation Email</label>
                 <input type="text" name="email" value={invoiceData.email} onChange={handleFieldChange} />
               </div>
+            {/* Submit Section at Bottom of Form */}
+            <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px dashed #cbd5e1', display: 'flex', gap: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="btn btn-outline"
+                style={{ padding: '10px 18px', fontWeight: 'bold' }}
+              >
+                Reset Form
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                style={{
+                  padding: '12px 28px',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                }}
+              >
+                <Save size={18} /> {saving ? 'Submitting Form...' : 'Submit Invoice'}
+              </button>
             </div>
 
           </div>
@@ -621,9 +782,6 @@ function InvoiceGeneratorContent() {
           <div className={styles.stackedPreviewPanel}>
             <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 INVOICE SHEET PREVIEW (PDF VIEWER STYLE)</span>
-              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
-                <Printer size={14} /> Print PDF
-              </button>
             </div>
 
             {/* Document sheet */}
@@ -832,49 +990,7 @@ function InvoiceGeneratorContent() {
 
             </div>
 
-            {/* PDF Action Buttons */}
-            <div className={`${styles.pdfActionButtons} no-print-bar`}>
-              <button 
-                onClick={() => window.print()} 
-                className="btn" 
-                style={{ 
-                  padding: '12px 28px', 
-                  fontSize: '15px', 
-                  backgroundColor: '#093a5e', 
-                  color: '#ffffff', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  borderRadius: '6px', 
-                  border: 'none', 
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <Printer size={18} /> Print Invoice
-              </button>
-              <button 
-                onClick={() => window.print()} 
-                className="btn" 
-                style={{ 
-                  padding: '12px 28px', 
-                  fontSize: '15px', 
-                  backgroundColor: '#2563eb', 
-                  color: '#ffffff', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  borderRadius: '6px', 
-                  border: 'none', 
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <Save size={18} /> Download PDF
-              </button>
-            </div>
+
 
           </div>
 
