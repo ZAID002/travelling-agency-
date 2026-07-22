@@ -469,6 +469,7 @@ function HotelVoucherGeneratorContent() {
               <div className={styles.formGroup}>
                 <label>Booking Status</label>
                 <select name="status" value={voucherData.status} onChange={handleFieldChange}>
+                  <option value="Confirmed">Confirmed</option>
                   <option value="Definite">Definite</option>
                   <option value="Tentative">Tentative</option>
                   <option value="Hold">Hold</option>
