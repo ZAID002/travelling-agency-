@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import styles from '../generator.module.css';
 import HotelSelect from '@/components/HotelSelect';
+import QuickAddSelect from '@/components/QuickAddSelect';
 
 function UmrahVoucherGeneratorContent() {
   const searchParams = useSearchParams();
@@ -687,15 +688,36 @@ function UmrahVoucherGeneratorContent() {
                 <div className={styles.formGrid3} style={{ marginTop: '6px' }}>
                   <div className={styles.formGroup}>
                     <label>Room View</label>
-                    <input type="text" value={stay.view || ''} onChange={(e) => handleStayChange(index, 'view', e.target.value)} />
+                    <QuickAddSelect
+                      label="Room View"
+                      value={stay.view || ''}
+                      onChange={(val) => handleStayChange(index, 'view', val)}
+                      defaultOptions={['Haram View', 'City View', 'Kaaba View', 'Partial Haram View', 'Courtyard View']}
+                      storageKey="ftw_custom_room_views"
+                      placeholder="Select or add view..."
+                    />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <input type="text" value={stay.mealPlan || ''} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)} />
+                    <QuickAddSelect
+                      label="Meal Plan"
+                      value={stay.mealPlan || ''}
+                      onChange={(val) => handleStayChange(index, 'mealPlan', val)}
+                      defaultOptions={['RO', 'BB', 'HB', 'FB']}
+                      storageKey="ftw_custom_meal_plans"
+                      placeholder="Select or add meal plan..."
+                    />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <input type="text" value={stay.roomType || ''} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)} />
+                    <QuickAddSelect
+                      label="Room Type"
+                      value={stay.roomType || ''}
+                      onChange={(val) => handleStayChange(index, 'roomType', val)}
+                      defaultOptions={['Quad', 'Triple', 'Double', 'Single']}
+                      storageKey="ftw_custom_room_types"
+                      placeholder="Select or add room type..."
+                    />
                   </div>
                 </div>
                 <div className={styles.formGrid4} style={{ marginTop: '6px' }}>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import styles from '../generator.module.css';
 import HotelSelect from '@/components/HotelSelect';
+import QuickAddSelect from '@/components/QuickAddSelect';
 
 function HotelVoucherGeneratorContent() {
   const searchParams = useSearchParams();
@@ -558,7 +559,7 @@ function HotelVoucherGeneratorContent() {
                   </div>
                 </div>
 
-                <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
+                <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
                   <div className={styles.formGroup}>
                     <label>Hotel Category</label>
                     <select value={stay.rating} onChange={(e) => handleStayChange(index, 'rating', e.target.value)}>
@@ -570,52 +571,39 @@ function HotelVoucherGeneratorContent() {
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <select value={stay.roomType} onChange={(e) => handleStayChange(index, 'roomType', e.target.value)}>
-                      <option value="Quad">Quad</option>
-                      <option value="Triple">Triple</option>
-                      <option value="Double">Double</option>
-                      <option value="Single">Single</option>
-                      <option value="Custom Room (optional)">Custom Room (optional)</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Custom Room (optional)</label>
-                    <input
-                      type="text"
-                      placeholder="Write any room type"
-                      value={stay.customRoomType}
-                      onChange={(e) => handleStayChange(index, 'customRoomType', e.target.value)}
+                    <QuickAddSelect
+                      label="Room Type"
+                      value={stay.roomType}
+                      onChange={(val) => handleStayChange(index, 'roomType', val)}
+                      defaultOptions={['Quad', 'Triple', 'Double', 'Single']}
+                      storageKey="ftw_custom_room_types"
+                      placeholder="Select or add room type..."
                     />
                   </div>
                 </div>
 
-                <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
+                <div className={styles.formGrid2} style={{ marginTop: '8px' }}>
                   <div className={styles.formGroup}>
                     <label>Room View</label>
-                    <select value={stay.roomView} onChange={(e) => handleStayChange(index, 'roomView', e.target.value)}>
-                      <option value="Haram View">Haram View</option>
-                      <option value="City View">City View</option>
-                      <option value="Kaaba View">Kaaba View</option>
-                      <option value="Custom View (optional)">Custom View (optional)</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Custom View (optional)</label>
-                    <input
-                      type="text"
-                      placeholder="Write custom view"
-                      value={stay.customRoomView}
-                      onChange={(e) => handleStayChange(index, 'customRoomView', e.target.value)}
+                    <QuickAddSelect
+                      label="Room View"
+                      value={stay.roomView}
+                      onChange={(val) => handleStayChange(index, 'roomView', val)}
+                      defaultOptions={['Haram View', 'City View', 'Kaaba View', 'Partial Haram View', 'Courtyard View']}
+                      storageKey="ftw_custom_room_views"
+                      placeholder="Select or add room view..."
                     />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <select value={stay.mealPlan} onChange={(e) => handleStayChange(index, 'mealPlan', e.target.value)}>
-                      <option value="RO">RO</option>
-                      <option value="BB">BB</option>
-                      <option value="HB">HB</option>
-                      <option value="FB">FB</option>
-                    </select>
+                    <QuickAddSelect
+                      label="Meal Plan"
+                      value={stay.mealPlan}
+                      onChange={(val) => handleStayChange(index, 'mealPlan', val)}
+                      defaultOptions={['RO', 'BB', 'HB', 'FB']}
+                      storageKey="ftw_custom_meal_plans"
+                      placeholder="Select or add meal plan..."
+                    />
                   </div>
                 </div>
 
