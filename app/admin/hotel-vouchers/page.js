@@ -651,6 +651,7 @@ function HotelVoucherGeneratorContent() {
                       type="text"
                       placeholder="e.g. HCN-12345"
                       value={stay.hcn}
+                      style={{ fontWeight: 'bold' }}
                       onChange={(e) => handleStayChange(index, 'hcn', e.target.value.toUpperCase())}
                     />
                   </div>
