@@ -821,12 +821,35 @@ function HotelVoucherGeneratorContent() {
               const isMulti = stayCount > 1;
               const isLargeMulti = stayCount >= 3;
 
-              const sheetPadding = isLargeMulti ? '16px 20px 12px 20px' : isMulti ? '24px 24px 16px 24px' : '42px 34px 28px 34px';
-              const logoH = isLargeMulti ? '70px' : isMulti ? '90px' : '135px';
-              const sectionMb = isLargeMulti ? '8px' : isMulti ? '14px' : '26px';
-              const cellPad = isLargeMulti ? '3px 5px' : isMulti ? '5px 7px' : '9px 10px';
-              const thPad = isLargeMulti ? '4px 5px' : isMulti ? '6px 6px' : '10px 10px';
-              const cardPad = isLargeMulti ? '6px 8px' : isMulti ? '8px 10px' : '12px 14px';
+              let sheetPadding = '40px 34px 28px 34px';
+              let logoH = '135px';
+              let sectionMb = '24px';
+              let cellPad = '9px 10px';
+              let thPad = '10px 10px';
+              let cardPad = '12px 14px';
+
+              if (stayCount === 2) {
+                sheetPadding = '36px 32px 24px 32px';
+                logoH = '125px';
+                sectionMb = '20px';
+                cellPad = '8px 9px';
+                thPad = '9px 9px';
+                cardPad = '10px 12px';
+              } else if (stayCount === 3) {
+                sheetPadding = '30px 28px 20px 28px';
+                logoH = '115px';
+                sectionMb = '16px';
+                cellPad = '6px 8px';
+                thPad = '8px 8px';
+                cardPad = '9px 10px';
+              } else if (stayCount >= 4) {
+                sheetPadding = '20px 22px 14px 22px';
+                logoH = '90px';
+                sectionMb = '10px';
+                cellPad = '4px 6px';
+                thPad = '5px 6px';
+                cardPad = '6px 8px';
+              }
 
               return (
                 <div id="voucher-print" className={styles.voucherSheet} style={{
