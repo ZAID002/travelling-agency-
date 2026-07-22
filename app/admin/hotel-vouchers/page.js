@@ -262,11 +262,13 @@ function HotelVoucherGeneratorContent() {
           #voucher-print {
             width: 100% !important;
             max-width: 100% !important;
-            height: auto !important;
-            min-height: auto !important;
-            display: block !important;
+            height: 282mm !important;
+            min-height: 282mm !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
             border: none !important;
-            padding: 8px 14px !important;
+            padding: 10px 16px !important;
             margin: 0 !important;
             box-shadow: none !important;
             box-sizing: border-box !important;
@@ -821,30 +823,30 @@ function HotelVoucherGeneratorContent() {
               const isMulti = stayCount > 1;
               const isLargeMulti = stayCount >= 3;
 
-              let sheetPadding = '40px 34px 28px 34px';
-              let logoH = '135px';
+              let sheetPadding = '36px 34px 28px 34px';
+              let logoH = '130px';
               let sectionMb = '24px';
-              let cellPad = '9px 10px';
+              let cellPad = '10px 10px';
               let thPad = '10px 10px';
               let cardPad = '12px 14px';
 
               if (stayCount === 2) {
-                sheetPadding = '36px 32px 24px 32px';
-                logoH = '125px';
+                sheetPadding = '32px 30px 24px 30px';
+                logoH = '120px';
                 sectionMb = '20px';
-                cellPad = '8px 9px';
-                thPad = '9px 9px';
-                cardPad = '10px 12px';
+                cellPad = '9px 10px';
+                thPad = '10px 10px';
+                cardPad = '11px 13px';
               } else if (stayCount === 3) {
-                sheetPadding = '30px 28px 20px 28px';
-                logoH = '115px';
+                sheetPadding = '26px 26px 20px 26px';
+                logoH = '105px';
                 sectionMb = '16px';
-                cellPad = '6px 8px';
+                cellPad = '7px 8px';
                 thPad = '8px 8px';
-                cardPad = '9px 10px';
+                cardPad = '9px 11px';
               } else if (stayCount >= 4) {
-                sheetPadding = '20px 22px 14px 22px';
-                logoH = '90px';
+                sheetPadding = '18px 20px 14px 20px';
+                logoH = '85px';
                 sectionMb = '10px';
                 cellPad = '4px 6px';
                 thPad = '5px 6px';
@@ -861,10 +863,14 @@ function HotelVoucherGeneratorContent() {
                   lineHeight: '1.45',
                   borderTopLeftRadius: 0,
                   borderTopRightRadius: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  minHeight: stayCount >= 4 ? 'auto' : '280mm',
                   boxSizing: 'border-box'
                 }}>
                   
-                  <div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
 
                     {/* Header block with Logo and Title */}
                     <div style={{ display: 'grid', gridTemplateColumns: `${isMulti ? '130px' : '180px'} 1fr ${isMulti ? '130px' : '180px'}`, alignItems: 'center', borderBottom: '2px solid #0a2e5c', paddingBottom: isMulti ? '8px' : '14px', marginBottom: sectionMb }}>
