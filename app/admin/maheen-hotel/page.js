@@ -1006,7 +1006,7 @@ function UmrahVoucherGeneratorContent() {
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{stay.hotelName || 'N/A'}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{stay.view}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{stay.mealPlan}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>{stay.hcn || '-'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: '900', fontSize: '14.5px', color: '#0a2e5c', fontFamily: 'monospace, sans-serif' }}>{stay.hcn || '-'}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>{stay.roomType}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkInFormatted}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkOutFormatted}</td>

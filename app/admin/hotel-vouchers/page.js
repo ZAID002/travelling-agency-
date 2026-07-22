@@ -916,7 +916,7 @@ function HotelVoucherGeneratorContent() {
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold' }}>{stay.mealPlan}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkInFormatted}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{checkOutFormatted}</td>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', fontFamily: 'monospace' }}>{stay.hcn || '-'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: '900', fontSize: '14.5px', color: '#0f4c81', fontFamily: 'monospace, sans-serif' }}>{stay.hcn || '-'}</td>
                         </tr>
                       );
                     })}
