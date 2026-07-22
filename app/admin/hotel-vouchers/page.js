@@ -103,7 +103,15 @@ function HotelVoucherGeneratorContent() {
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
-    setVoucherData(prev => ({ ...prev, [name]: value }));
+    setVoucherData(prev => {
+      const newState = { ...prev, [name]: value };
+      if (name === 'checkInTime' || name === 'checkOutTime') {
+        const inTime = name === 'checkInTime' ? value : (prev.checkInTime || '16:00');
+        const outTime = name === 'checkOutTime' ? value : (prev.checkOutTime || '14:00');
+        newState.importantNotes = `Check in time at: ${inTime} any early arrival subject to availability. Check out time at: ${outTime}, after ${outTime} one night will be charged. To guarantee your booking total amount to be transfer to our Account, before option date mentioned in the booking in case of guarantee cancellation full payment will be charged.`;
+      }
+      return newState;
+    });
   };
 
   const handleFieldChangeUpper = (e) => {
