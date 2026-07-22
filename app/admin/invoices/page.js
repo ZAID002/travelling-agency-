@@ -743,6 +743,8 @@ function InvoiceGeneratorContent() {
                 <label>Reservation Email</label>
                 <input type="text" name="email" value={invoiceData.email} onChange={handleFieldChange} />
               </div>
+            </div>
+
             {/* Submit Section at Bottom of Form */}
             <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px dashed #cbd5e1', display: 'flex', gap: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
               <button
