@@ -263,10 +263,8 @@ function HotelVoucherGeneratorContent() {
             width: 100% !important;
             max-width: 100% !important;
             height: auto !important;
-            min-height: 270mm !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
+            min-height: auto !important;
+            display: block !important;
             border: none !important;
             padding: 8px 14px !important;
             margin: 0 !important;
@@ -840,14 +838,10 @@ function HotelVoucherGeneratorContent() {
                   lineHeight: '1.45',
                   borderTopLeftRadius: 0,
                   borderTopRightRadius: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  minHeight: isMulti ? 'auto' : '270mm',
                   boxSizing: 'border-box'
                 }}>
                   
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                  <div>
 
                     {/* Header block with Logo and Title */}
                     <div style={{ display: 'grid', gridTemplateColumns: `${isMulti ? '130px' : '180px'} 1fr ${isMulti ? '130px' : '180px'}`, alignItems: 'center', borderBottom: '2px solid #0a2e5c', paddingBottom: isMulti ? '8px' : '14px', marginBottom: sectionMb }}>
