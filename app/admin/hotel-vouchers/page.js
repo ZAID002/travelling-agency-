@@ -906,7 +906,7 @@ function HotelVoucherGeneratorContent() {
 
                       return (
                         <tr key={idx}>
-                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>Stay {idx + 1}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{idx + 1}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>{stay.city}</td>
                           <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px' }}>
                             <div style={{ fontWeight: 'bold', color: '#0f4c81' }}>{stay.hotelName || 'N/A'}</div>
