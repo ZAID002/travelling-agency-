@@ -1076,9 +1076,7 @@ function HotelVoucherGeneratorContent() {
                     <div style={{ padding: cardPad, fontSize: '10.5px', color: '#dc2626', minHeight: '24px' }}>
                       {voucherData.remarks && voucherData.remarks.trim() !== '' ? (
                         <div style={{ textTransform: 'uppercase', fontWeight: 'bold', color: '#dc2626' }}>{voucherData.remarks}</div>
-                      ) : (
-                        <div style={{ color: '#64748b', fontStyle: 'italic' }}>N/A</div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
 
