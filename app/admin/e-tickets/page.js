@@ -169,14 +169,14 @@ function ETicketGeneratorContent() {
     passengers: [
       {
         title: 'Mr',
-        givenName: 'MUHAMMAD',
-        surname: 'ALI',
-        dob: '1990-01-01',
-        nationality: 'Pakistan',
-        passportNo: 'AB1234567',
-        pnr: 'PNR888',
+        givenName: '',
+        surname: '',
+        dob: '',
+        nationality: '',
+        passportNo: '',
+        pnr: '',
         status: 'CONFIRMED',
-        passportExpiry: '2032-12-31'
+        passportExpiry: ''
       }
     ],
     sectors: [
