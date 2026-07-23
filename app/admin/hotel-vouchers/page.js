@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
-  Hotel, Plus, Trash2, Printer, Save, RefreshCw, 
+  Hotel, Plus, Trash2, Printer, Download, Save, RefreshCw, 
   User, FileText, ArrowLeft, Calendar, Bell, Search, CheckCircle2
 } from 'lucide-react';
 import styles from '../generator.module.css';
@@ -18,6 +18,36 @@ function HotelVoucherGeneratorContent() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    try {
+      setDownloadingPdf(true);
+      if (!window.html2pdf) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+      const element = document.getElementById('voucher-print');
+      const opt = {
+        margin: 0,
+        filename: `${voucherData.voucherNo || 'Hotel-Voucher'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 850 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      await window.html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      window.print();
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   // Initial state matching https://flytoway.com/hotel-voucher-generator-page/
   const initialVoucherState = {
@@ -795,26 +825,49 @@ function HotelVoucherGeneratorContent() {
           <div className={styles.stackedPreviewPanel}>
             <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 CONFIRMATION SHEET PREVIEW (PDF VIEWER STYLE)</span>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="btn"
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  backgroundColor: '#ef4444',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                <Printer size={14} /> Print / Save PDF
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  disabled={downloadingPdf}
+                  onClick={handleDownloadPDF}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '12px',
+                    backgroundColor: '#10b981',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone/Mobile)'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '12px',
+                    backgroundColor: '#0a2e5c',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  <Printer size={14} /> Print
+                </button>
+              </div>
             </div>
 
             {/* Document sheet */}

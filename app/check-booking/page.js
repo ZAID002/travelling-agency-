@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plane, Hotel, Printer, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { Plane, Hotel, Printer, Download, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
 import styles from '../admin/generator.module.css';
 
 export default function CheckBookingPage() {
@@ -9,10 +9,40 @@ export default function CheckBookingPage() {
   const [secondaryValue, setSecondaryValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
   // States to hold the fetched document
   const [docType, setDocType] = useState(null); // 'ETicket' or 'HotelVoucher'
   const [docData, setDocData] = useState(null);
+
+  const handleDownloadPDF = async () => {
+    try {
+      setDownloadingPdf(true);
+      if (!window.html2pdf) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+      const element = document.getElementById('voucher-print');
+      const opt = {
+        margin: 0,
+        filename: `${docData?.voucherNo || 'Voucher'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 850 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      await window.html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      window.print();
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -150,18 +180,41 @@ export default function CheckBookingPage() {
           <div className="animate-fade-in" style={{ marginTop: '20px' }}>
             
             {/* Toolbar control */}
-            <div className={styles.previewToolbar} style={{ marginBottom: '20px' }}>
+            <div className={styles.previewToolbar} style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button onClick={handleReset} className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '13px' }}>
                 <ArrowLeft size={14} /> Search Another Booking
               </button>
-              <button onClick={() => window.print()} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px' }}>
-                <Printer size={14} /> Print / Download PDF
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  disabled={downloadingPdf}
+                  onClick={handleDownloadPDF}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '13px',
+                    backgroundColor: '#10b981',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone/Mobile)'}
+                </button>
+                <button onClick={() => window.print()} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px' }}>
+                  <Printer size={14} /> Print
+                </button>
+              </div>
             </div>
 
             {/* Render Flight E-Ticket receipt */}
             {docType === 'ETicket' && (
-              <div className={styles.voucherSheet}>
+              <div id="voucher-print" className={styles.voucherSheet}>
                 <div>
                   <div className={styles.voucherHeader}>
                     <div className={styles.voucherBrand}>
