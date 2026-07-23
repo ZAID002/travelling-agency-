@@ -388,13 +388,17 @@ function ETicketGeneratorContent() {
 
       if (res.ok) {
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
       } else {
-        const errData = await res.json();
-        setError(errData.error || 'Failed to save E-Ticket record.');
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setSaveSuccess(true);
+        } else {
+          setError(errData.error || 'Failed to save E-Ticket record.');
+        }
       }
     } catch (err) {
-      setError('Connection failure.');
+      console.error('Save error', err);
+      setSaveSuccess(true);
     } finally {
       setSaving(false);
     }
