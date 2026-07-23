@@ -1059,6 +1059,39 @@ function ETicketGeneratorContent() {
               <textarea name="otherInfo" value={ticketData.otherInfo} onChange={handleFieldChange} rows={2} />
             </div>
 
+            {/* Submit Section at Bottom of Form */}
+            <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '2px dashed #cbd5e1', display: 'flex', gap: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="btn btn-outline"
+                style={{ padding: '10px 18px', fontWeight: 'bold' }}
+              >
+                Reset Form
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                style={{
+                  padding: '12px 28px',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                }}
+              >
+                <Save size={18} /> {saving ? 'Submitting Form...' : 'Submit Ticket'}
+              </button>
+            </div>
+
           </div>
 
           {/* RIGHT: Live print layout */}
