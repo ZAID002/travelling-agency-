@@ -677,18 +677,42 @@ function InvoiceGeneratorContent() {
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <input type="text" placeholder="e.g. Quad, Triple" value={item.roomType} onChange={(e) => handleItemChange(index, 'roomType', e.target.value)} />
+                    <select value={item.roomType} onChange={(e) => handleItemChange(index, 'roomType', e.target.value)}>
+                      <option value="Single">Single</option>
+                      <option value="Double">Double</option>
+                      <option value="Triple">Triple</option>
+                      <option value="Quad">Quad</option>
+                      <option value="Quint">Quint</option>
+                      <option value="Hexa">Hexa</option>
+                      <option value="Suite">Suite</option>
+                      <option value="Family">Family</option>
+                    </select>
                   </div>
                   <div className={styles.formGroup}>
                     <label>View</label>
-                    <input type="text" placeholder="e.g. CV, Haram View" value={item.view} onChange={(e) => handleItemChange(index, 'view', e.target.value)} />
+                    <select value={item.view} onChange={(e) => handleItemChange(index, 'view', e.target.value)}>
+                      <option value="CV">CV (City View)</option>
+                      <option value="HV">HV (Haram View)</option>
+                      <option value="SV">SV (Sea View)</option>
+                      <option value="GV">GV (Garden View)</option>
+                      <option value="PV">PV (Pool View)</option>
+                      <option value="MV">MV (Mountain View)</option>
+                      <option value="No View">No View</option>
+                    </select>
                   </div>
                 </div>
 
                 <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <input type="text" placeholder="e.g. R.O, BB" value={item.meal} onChange={(e) => handleItemChange(index, 'meal', e.target.value)} />
+                    <select value={item.meal} onChange={(e) => handleItemChange(index, 'meal', e.target.value)}>
+                      <option value="R.O">R.O (Room Only)</option>
+                      <option value="BB">BB (Bed &amp; Breakfast)</option>
+                      <option value="HB">HB (Half Board)</option>
+                      <option value="FB">FB (Full Board)</option>
+                      <option value="AI">AI (All Inclusive)</option>
+                      <option value="CP">CP (Continental Plan)</option>
+                    </select>
                   </div>
                   <div className={styles.formGroup}>
                     <label>Check In</label>
