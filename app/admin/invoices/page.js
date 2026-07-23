@@ -129,6 +129,28 @@ function InvoiceGeneratorContent() {
 
   const [invoiceData, setInvoiceData] = useState(initialInvoiceState);
 
+  // Dynamic dropdown options (user can add via + button)
+  const [roomTypeOptions, setRoomTypeOptions] = useState(['Single','Double','Triple','Quad','Quint','Hexa','Suite','Family']);
+  const [viewOptions, setViewOptions] = useState(['CV','HV','SV','GV','PV','MV','No View']);
+  const [mealOptions, setMealOptions] = useState(['R.O','BB','HB','FB','AI','CP']);
+
+  // Add-new-option UI states: { fieldName: { itemIndex: showingInput? } }
+  const [addingOption, setAddingOption] = useState({}); // e.g. { 'roomType-0': true }
+  const [newOptionValue, setNewOptionValue] = useState({}); // e.g. { 'roomType-0': 'Penthouse' }
+
+  const handleAddOption = (field, index, setterFn) => {
+    const key = `${field}-${index}`;
+    const val = (newOptionValue[key] || '').trim();
+    if (!val) return;
+    setterFn(prev => prev.includes(val) ? prev : [...prev, val]);
+    // Auto-select the new option for this item row
+    const updatedItems = [...invoiceData.items];
+    updatedItems[index][field] = val;
+    setInvoiceData(prev => ({ ...prev, items: updatedItems }));
+    setAddingOption(prev => ({ ...prev, [key]: false }));
+    setNewOptionValue(prev => ({ ...prev, [key]: '' }));
+  };
+
   // Search states
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -677,55 +699,68 @@ function InvoiceGeneratorContent() {
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <select
-                      value={['Single','Double','Triple','Quad','Quint','Hexa','Suite','Family'].includes(item.roomType) ? item.roomType : '__custom__'}
-                      onChange={(e) => handleItemChange(index, 'roomType', e.target.value === '__custom__' ? '' : e.target.value)}
-                    >
-                      <option value="Single">Single</option>
-                      <option value="Double">Double</option>
-                      <option value="Triple">Triple</option>
-                      <option value="Quad">Quad</option>
-                      <option value="Quint">Quint</option>
-                      <option value="Hexa">Hexa</option>
-                      <option value="Suite">Suite</option>
-                      <option value="Family">Family</option>
-                      <option value="__custom__">✏️ Other (Custom)...</option>
-                    </select>
-                    {!['Single','Double','Triple','Quad','Quint','Hexa','Suite','Family'].includes(item.roomType) && (
-                      <input
-                        type="text"
-                        placeholder="Type custom room type..."
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <select
                         value={item.roomType}
                         onChange={(e) => handleItemChange(index, 'roomType', e.target.value)}
-                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
-                        autoFocus
-                      />
+                        style={{ flex: 1 }}
+                      >
+                        {roomTypeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        title="Add new Room Type option"
+                        onClick={() => setAddingOption(prev => ({ ...prev, [`roomType-${index}`]: true }))}
+                        style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', background: '#0f4c81', color: '#fff', border: 'none', fontSize: '18px', lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >+</button>
+                    </div>
+                    {addingOption[`roomType-${index}`] && (
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                        <input
+                          type="text"
+                          autoFocus
+                          placeholder="e.g. Penthouse"
+                          value={newOptionValue[`roomType-${index}`] || ''}
+                          onChange={(e) => setNewOptionValue(prev => ({ ...prev, [`roomType-${index}`]: e.target.value }))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddOption('roomType', index, setRoomTypeOptions)}
+                          style={{ flex: 1, borderColor: '#0f4c81' }}
+                        />
+                        <button type="button" onClick={() => handleAddOption('roomType', index, setRoomTypeOptions)} style={{ padding: '4px 10px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>✓</button>
+                        <button type="button" onClick={() => setAddingOption(prev => ({ ...prev, [`roomType-${index}`]: false }))} style={{ padding: '4px 10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
+                      </div>
                     )}
                   </div>
                   <div className={styles.formGroup}>
                     <label>View</label>
-                    <select
-                      value={['CV','HV','SV','GV','PV','MV','No View'].includes(item.view) ? item.view : '__custom__'}
-                      onChange={(e) => handleItemChange(index, 'view', e.target.value === '__custom__' ? '' : e.target.value)}
-                    >
-                      <option value="CV">CV (City View)</option>
-                      <option value="HV">HV (Haram View)</option>
-                      <option value="SV">SV (Sea View)</option>
-                      <option value="GV">GV (Garden View)</option>
-                      <option value="PV">PV (Pool View)</option>
-                      <option value="MV">MV (Mountain View)</option>
-                      <option value="No View">No View</option>
-                      <option value="__custom__">✏️ Other (Custom)...</option>
-                    </select>
-                    {!['CV','HV','SV','GV','PV','MV','No View'].includes(item.view) && (
-                      <input
-                        type="text"
-                        placeholder="Type custom view..."
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <select
                         value={item.view}
                         onChange={(e) => handleItemChange(index, 'view', e.target.value)}
-                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
-                        autoFocus
-                      />
+                        style={{ flex: 1 }}
+                      >
+                        {viewOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        title="Add new View option"
+                        onClick={() => setAddingOption(prev => ({ ...prev, [`view-${index}`]: true }))}
+                        style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', background: '#0f4c81', color: '#fff', border: 'none', fontSize: '18px', lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >+</button>
+                    </div>
+                    {addingOption[`view-${index}`] && (
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                        <input
+                          type="text"
+                          autoFocus
+                          placeholder="e.g. Desert View"
+                          value={newOptionValue[`view-${index}`] || ''}
+                          onChange={(e) => setNewOptionValue(prev => ({ ...prev, [`view-${index}`]: e.target.value }))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddOption('view', index, setViewOptions)}
+                          style={{ flex: 1, borderColor: '#0f4c81' }}
+                        />
+                        <button type="button" onClick={() => handleAddOption('view', index, setViewOptions)} style={{ padding: '4px 10px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>✓</button>
+                        <button type="button" onClick={() => setAddingOption(prev => ({ ...prev, [`view-${index}`]: false }))} style={{ padding: '4px 10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -733,27 +768,35 @@ function InvoiceGeneratorContent() {
                 <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <select
-                      value={['R.O','BB','HB','FB','AI','CP'].includes(item.meal) ? item.meal : '__custom__'}
-                      onChange={(e) => handleItemChange(index, 'meal', e.target.value === '__custom__' ? '' : e.target.value)}
-                    >
-                      <option value="R.O">R.O (Room Only)</option>
-                      <option value="BB">BB (Bed &amp; Breakfast)</option>
-                      <option value="HB">HB (Half Board)</option>
-                      <option value="FB">FB (Full Board)</option>
-                      <option value="AI">AI (All Inclusive)</option>
-                      <option value="CP">CP (Continental Plan)</option>
-                      <option value="__custom__">✏️ Other (Custom)...</option>
-                    </select>
-                    {!['R.O','BB','HB','FB','AI','CP'].includes(item.meal) && (
-                      <input
-                        type="text"
-                        placeholder="Type custom meal plan..."
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <select
                         value={item.meal}
                         onChange={(e) => handleItemChange(index, 'meal', e.target.value)}
-                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
-                        autoFocus
-                      />
+                        style={{ flex: 1 }}
+                      >
+                        {mealOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        title="Add new Meal Plan option"
+                        onClick={() => setAddingOption(prev => ({ ...prev, [`meal-${index}`]: true }))}
+                        style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', background: '#0f4c81', color: '#fff', border: 'none', fontSize: '18px', lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >+</button>
+                    </div>
+                    {addingOption[`meal-${index}`] && (
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                        <input
+                          type="text"
+                          autoFocus
+                          placeholder="e.g. MAP"
+                          value={newOptionValue[`meal-${index}`] || ''}
+                          onChange={(e) => setNewOptionValue(prev => ({ ...prev, [`meal-${index}`]: e.target.value }))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddOption('meal', index, setMealOptions)}
+                          style={{ flex: 1, borderColor: '#0f4c81' }}
+                        />
+                        <button type="button" onClick={() => handleAddOption('meal', index, setMealOptions)} style={{ padding: '4px 10px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>✓</button>
+                        <button type="button" onClick={() => setAddingOption(prev => ({ ...prev, [`meal-${index}`]: false }))} style={{ padding: '4px 10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
+                      </div>
                     )}
                   </div>
                   <div className={styles.formGroup}>
