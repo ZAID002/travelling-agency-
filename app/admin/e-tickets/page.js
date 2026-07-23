@@ -559,7 +559,138 @@ function ETicketGeneratorContent() {
             </div>
 
             {error && <div className={styles.errorBox} style={{ margin: '0 0 15px 0' }}>{error}</div>}
-            {saveSuccess && <div className={styles.successBox} style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: 10, borderRadius: 4, fontSize: 13, fontWeight: 600, textAlign: 'center', marginBottom: 15 }}>Ticket saved successfully in database!</div>}
+            
+            {/* Form Submission Confirmation Modal Popup */}
+            {saveSuccess && (
+              <div
+                className="no-print-bar"
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  zIndex: 9999,
+                  backgroundColor: 'rgba(15, 23, 42, 0.7)',
+                  backdropFilter: 'blur(4px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px'
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '12px',
+                    width: '100%',
+                    maxWidth: '480px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                    padding: '30px 24px',
+                    position: 'relative'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      backgroundColor: '#d1fae5',
+                      color: '#10b981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px auto'
+                    }}
+                  >
+                    <CheckCircle2 size={36} />
+                  </div>
+
+                  <h2 style={{ margin: '0 0 8px 0', fontSize: '20px', color: '#0f172a', fontWeight: '800' }}>
+                    Form Submitted Successfully!
+                  </h2>
+                  <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#475569' }}>
+                    Ticket <strong>{ticketData.voucherNo}</strong> has been saved in database and is ready to print or download.
+                  </p>
+
+                  {/* Action Buttons inside Popup Modal */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <button
+                      type="button"
+                      disabled={downloadingPdf}
+                      onClick={() => {
+                        handleDownloadPDF();
+                        setSaveSuccess(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: '#10b981',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)'
+                      }}
+                    >
+                      <Download size={18} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone / Android / Mobile)'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.print();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: '#0a2e5c',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 10px rgba(10, 46, 92, 0.25)'
+                      }}
+                    >
+                      <Printer size={18} /> Print
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSaveSuccess(false);
+                        handleReset();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        backgroundColor: '#f1f5f9',
+                        color: '#475569',
+                        fontWeight: '600',
+                        fontSize: '13px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        marginTop: '4px'
+                      }}
+                    >
+                      Close &amp; Create New Ticket
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* 1. Ticket Record */}
             <div className={styles.formSectionTitle} style={{ backgroundColor: '#035a37', color: '#ffffff', padding: '6px 10px', borderRadius: '4px' }}>
