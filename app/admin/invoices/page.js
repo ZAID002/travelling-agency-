@@ -677,7 +677,10 @@ function InvoiceGeneratorContent() {
                   </div>
                   <div className={styles.formGroup}>
                     <label>Room Type</label>
-                    <select value={item.roomType} onChange={(e) => handleItemChange(index, 'roomType', e.target.value)}>
+                    <select
+                      value={['Single','Double','Triple','Quad','Quint','Hexa','Suite','Family'].includes(item.roomType) ? item.roomType : '__custom__'}
+                      onChange={(e) => handleItemChange(index, 'roomType', e.target.value === '__custom__' ? '' : e.target.value)}
+                    >
                       <option value="Single">Single</option>
                       <option value="Double">Double</option>
                       <option value="Triple">Triple</option>
@@ -686,11 +689,25 @@ function InvoiceGeneratorContent() {
                       <option value="Hexa">Hexa</option>
                       <option value="Suite">Suite</option>
                       <option value="Family">Family</option>
+                      <option value="__custom__">✏️ Other (Custom)...</option>
                     </select>
+                    {!['Single','Double','Triple','Quad','Quint','Hexa','Suite','Family'].includes(item.roomType) && (
+                      <input
+                        type="text"
+                        placeholder="Type custom room type..."
+                        value={item.roomType}
+                        onChange={(e) => handleItemChange(index, 'roomType', e.target.value)}
+                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
+                        autoFocus
+                      />
+                    )}
                   </div>
                   <div className={styles.formGroup}>
                     <label>View</label>
-                    <select value={item.view} onChange={(e) => handleItemChange(index, 'view', e.target.value)}>
+                    <select
+                      value={['CV','HV','SV','GV','PV','MV','No View'].includes(item.view) ? item.view : '__custom__'}
+                      onChange={(e) => handleItemChange(index, 'view', e.target.value === '__custom__' ? '' : e.target.value)}
+                    >
                       <option value="CV">CV (City View)</option>
                       <option value="HV">HV (Haram View)</option>
                       <option value="SV">SV (Sea View)</option>
@@ -698,21 +715,46 @@ function InvoiceGeneratorContent() {
                       <option value="PV">PV (Pool View)</option>
                       <option value="MV">MV (Mountain View)</option>
                       <option value="No View">No View</option>
+                      <option value="__custom__">✏️ Other (Custom)...</option>
                     </select>
+                    {!['CV','HV','SV','GV','PV','MV','No View'].includes(item.view) && (
+                      <input
+                        type="text"
+                        placeholder="Type custom view..."
+                        value={item.view}
+                        onChange={(e) => handleItemChange(index, 'view', e.target.value)}
+                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
+                        autoFocus
+                      />
+                    )}
                   </div>
                 </div>
 
                 <div className={styles.formGrid3} style={{ marginTop: '8px' }}>
                   <div className={styles.formGroup}>
                     <label>Meal Plan</label>
-                    <select value={item.meal} onChange={(e) => handleItemChange(index, 'meal', e.target.value)}>
+                    <select
+                      value={['R.O','BB','HB','FB','AI','CP'].includes(item.meal) ? item.meal : '__custom__'}
+                      onChange={(e) => handleItemChange(index, 'meal', e.target.value === '__custom__' ? '' : e.target.value)}
+                    >
                       <option value="R.O">R.O (Room Only)</option>
                       <option value="BB">BB (Bed &amp; Breakfast)</option>
                       <option value="HB">HB (Half Board)</option>
                       <option value="FB">FB (Full Board)</option>
                       <option value="AI">AI (All Inclusive)</option>
                       <option value="CP">CP (Continental Plan)</option>
+                      <option value="__custom__">✏️ Other (Custom)...</option>
                     </select>
+                    {!['R.O','BB','HB','FB','AI','CP'].includes(item.meal) && (
+                      <input
+                        type="text"
+                        placeholder="Type custom meal plan..."
+                        value={item.meal}
+                        onChange={(e) => handleItemChange(index, 'meal', e.target.value)}
+                        style={{ marginTop: '6px', borderColor: '#f59e0b' }}
+                        autoFocus
+                      />
+                    )}
                   </div>
                   <div className={styles.formGroup}>
                     <label>Check In</label>
