@@ -37,7 +37,15 @@ function HotelVoucherGeneratorContent() {
         margin: 0,
         filename: `${voucherData.voucherNo || 'Hotel-Voucher'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 850 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false, 
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          windowWidth: 850 
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       await window.html2pdf().set(opt).from(element).save();
@@ -421,13 +429,15 @@ function HotelVoucherGeneratorContent() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <button
                       type="button"
+                      disabled={downloadingPdf}
                       onClick={() => {
-                        window.print();
+                        handleDownloadPDF();
+                        setSaveSuccess(false);
                       }}
                       style={{
                         width: '100%',
                         padding: '12px',
-                        backgroundColor: '#ef4444',
+                        backgroundColor: '#10b981',
                         color: '#ffffff',
                         fontWeight: '700',
                         fontSize: '14px',
@@ -438,10 +448,35 @@ function HotelVoucherGeneratorContent() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '8px',
-                        boxShadow: '0 4px 10px rgba(239, 68, 68, 0.25)'
+                        boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)'
                       }}
                     >
-                      <Printer size={18} /> Print / Download Voucher PDF
+                      <Download size={18} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone / Android / Mobile)'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.print();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: '#0a2e5c',
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: '14px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 10px rgba(10, 46, 92, 0.25)'
+                      }}
+                    >
+                      <Printer size={18} /> Print
                     </button>
 
                     <button

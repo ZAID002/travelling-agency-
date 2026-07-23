@@ -32,7 +32,15 @@ export default function CheckBookingPage() {
         margin: 0,
         filename: `${docData?.voucherNo || 'Voucher'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 850 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false, 
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          windowWidth: 850 
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       await window.html2pdf().set(opt).from(element).save();
