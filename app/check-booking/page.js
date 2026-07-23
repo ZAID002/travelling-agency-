@@ -28,22 +28,39 @@ export default function CheckBookingPage() {
         });
       }
       const element = document.getElementById('voucher-print');
+      if (!element) return;
+
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+      const originalMargin = element.style.margin;
+
+      element.style.width = '794px';
+      element.style.maxWidth = '794px';
+      element.style.margin = '0 auto';
+
       const opt = {
-        margin: 0,
+        margin: [0, 0, 0, 0],
         filename: `${docData?.voucherNo || 'Voucher'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2, 
           useCORS: true, 
           logging: false, 
+          width: 794,
+          windowWidth: 794,
           scrollX: 0,
           scrollY: 0,
           x: 0,
-          windowWidth: 850 
+          y: 0
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
+
       await window.html2pdf().set(opt).from(element).save();
+
+      element.style.width = originalWidth;
+      element.style.maxWidth = originalMaxWidth;
+      element.style.margin = originalMargin;
     } catch (err) {
       console.error('PDF generation error:', err);
       window.print();
