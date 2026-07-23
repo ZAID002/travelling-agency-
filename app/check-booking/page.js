@@ -280,7 +280,7 @@ export default function CheckBookingPage() {
               <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '45px 35px', fontSize: '13.5px', color: '#000000', lineHeight: '1.5' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '16px', marginBottom: '25px' }}>
-                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '130px', width: 'auto', objectFit: 'contain' }} />
                   <div style={{ textAlign: 'right' }}>
                     <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>E-Ticket Voucher</h1>
                     <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 'bold' }}>{docData.voucherNo || 'FLY-1001'}</span>
