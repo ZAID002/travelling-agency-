@@ -361,20 +361,8 @@ function InvoiceGeneratorContent() {
             <button onClick={handleReset} className="btn btn-outline" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
               Reset All
             </button>
-            <button
-              type="button"
-              disabled={downloadingPdf}
-              onClick={handleDownloadPDF}
-              className="btn"
-              style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone/Mobile)'}
-            </button>
             <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0f4c81', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
               <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Invoice'}
-            </button>
-            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-              <Printer size={14} style={{ marginRight: 6 }} /> Print
             </button>
           </div>
         </div>
