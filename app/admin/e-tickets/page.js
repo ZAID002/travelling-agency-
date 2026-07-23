@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
-  Plane, Plus, Trash2, Printer, Save, RefreshCw, 
+  Plane, Plus, Trash2, Printer, Download, Save, RefreshCw, 
   ArrowLeft, CheckCircle2, Briefcase, Utensils, 
   Armchair, Headphones, FileText, User, Search, Upload
 } from 'lucide-react';
@@ -89,6 +89,61 @@ function ETicketGeneratorContent() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    try {
+      setDownloadingPdf(true);
+      if (!window.html2pdf) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+      const element = document.getElementById('voucher-print');
+      if (!element) return;
+
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+      const originalMargin = element.style.margin;
+
+      element.style.width = '794px';
+      element.style.maxWidth = '794px';
+      element.style.margin = '0 auto';
+
+      const opt = {
+        margin: [0, 0, 0, 0],
+        filename: `${ticketData.voucherNo || 'E-Ticket'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false, 
+          width: 794,
+          windowWidth: 794,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          y: 0
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await window.html2pdf().set(opt).from(element).save();
+
+      element.style.width = originalWidth;
+      element.style.maxWidth = originalMaxWidth;
+      element.style.margin = originalMargin;
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      window.print();
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   // Scanning simulation overlays state
   const [scanningIndex, setScanningIndex] = useState(null);
@@ -443,11 +498,20 @@ function ETicketGeneratorContent() {
             <button onClick={handleReset} className="btn btn-outline" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
               Reset All
             </button>
-            <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            <button
+              type="button"
+              disabled={downloadingPdf}
+              onClick={handleDownloadPDF}
+              className="btn"
+              style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone/Mobile)'}
+            </button>
+            <button onClick={handleSave} disabled={saving} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0f4c81', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
               <Save size={14} style={{ marginRight: 6 }} /> {saving ? 'Saving...' : 'Save Ticket'}
             </button>
-            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-              <Printer size={14} style={{ marginRight: 6 }} /> Print / Save PDF
+            <button onClick={() => window.print()} className="btn" style={{ padding: '8px 16px', backgroundColor: '#0a2e5c', color: '#ffffff', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <Printer size={14} style={{ marginRight: 6 }} /> Print
             </button>
           </div>
         </div>
@@ -870,9 +934,32 @@ function ETicketGeneratorContent() {
           <div className={styles.stackedPreviewPanel}>
             <div className={`${styles.previewToolbar} no-print-bar`} style={{ width: '100%', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderBottom: '1px solid #cbd5e1', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '6px 6px 0 0' }}>
               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#4b5563' }}>A4 FLIGHT TICKET PREVIEW (PDF VIEWER STYLE)</span>
-              <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#ef4444', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
-                <Printer size={14} /> Print PDF
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  disabled={downloadingPdf}
+                  onClick={handleDownloadPDF}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '12px',
+                    backgroundColor: '#10b981',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  <Download size={14} /> {downloadingPdf ? 'Generating PDF...' : 'Download PDF (iPhone/Mobile)'}
+                </button>
+                <button onClick={() => window.print()} className="btn" style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#0a2e5c', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', borderRadius: '4px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <Printer size={14} /> Print
+                </button>
+              </div>
             </div>
 
             {/* Document sheet */}
