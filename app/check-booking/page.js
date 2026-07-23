@@ -1,8 +1,46 @@
 'use client';
 
 import { useState } from 'react';
-import { Plane, Hotel, Printer, Download, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { Plane, Hotel, Printer, Download, ArrowLeft, Search, ShieldCheck, Briefcase, Utensils, Armchair, Headphones } from 'lucide-react';
 import styles from '../admin/generator.module.css';
+
+// Helper to format dates to "SUNDAY, 12 Jul 2026"
+const formatFlightDate = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
+      const day = parseInt(parts[2]);
+      const date = new Date(year, month, day);
+      const weekday = date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+      const dayNum = date.getDate();
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      const yearNum = date.getFullYear();
+      return `${weekday}, ${dayNum} ${monthName} ${yearNum}`;
+    }
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+    const dayNum = date.getDate();
+    const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+    const yearNum = date.getFullYear();
+    return `${weekday}, ${dayNum} ${monthName} ${yearNum}`;
+  } catch (e) {
+    return dateStr;
+  }
+};
+
+const parseAirportSelection = (val) => {
+  if (!val) return { code: 'YYY', city: 'Unknown', airport: 'Airport' };
+  const parts = val.split(' - ');
+  return {
+    code: (parts[0] || 'YYY').trim().toUpperCase(),
+    city: (parts[1] || val).trim(),
+    airport: (parts[2] || 'International Airport').trim()
+  };
+};
 
 export default function CheckBookingPage() {
   const [voucherNo, setVoucherNo] = useState('');
@@ -239,126 +277,152 @@ export default function CheckBookingPage() {
 
             {/* Render Flight E-Ticket receipt */}
             {docType === 'ETicket' && (
-              <div id="voucher-print" className={styles.voucherSheet}>
-                <div>
-                  <div className={styles.voucherHeader}>
-                    <div className={styles.voucherBrand}>
-                      <div className={styles.voucherLogo}>
-                        <Plane size={24} />
-                        <span>Fly To Way</span>
-                      </div>
-                      <span className={styles.voucherAgencyInfo}>210 D, Military Accounts, Lahore | info@flytoway.com</span>
-                    </div>
-                    <div className={styles.voucherTitleBlock}>
-                      <span className={styles.voucherTitle}>ELECTRONIC TICKET RECEIPT</span>
-                      <table className={styles.voucherRefTable} style={{ marginLeft: 'auto' }}>
-                        <tbody>
-                          <tr>
-                            <td>Voucher Number</td>
-                            <td style={{ fontWeight: '700', fontFamily: 'monospace' }}>{docData.voucherNo}</td>
-                          </tr>
-                          <tr>
-                            <td>Status</td>
-                            <td style={{ color: docData.status === 'Confirmed' || docData.status === 'Ticketed' ? '#10b981' : '#f59e0b', fontWeight: '700' }}>
-                              {docData.status.toUpperCase()}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Issue Date</td>
-                            <td>{new Date(docData.createdAt).toLocaleDateString()}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+              <div id="voucher-print" className={styles.voucherSheet} style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif', padding: '45px 35px', fontSize: '13.5px', color: '#000000', lineHeight: '1.5' }}>
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', paddingBottom: '16px', marginBottom: '25px' }}>
+                  <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '85px', width: 'auto', objectFit: 'contain' }} />
+                  <div style={{ textAlign: 'right' }}>
+                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#0f4c81', letterSpacing: '0.5px' }}>E-Ticket Voucher</h1>
+                    <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 'bold' }}>{docData.voucherNo || 'FLY-1001'}</span>
                   </div>
-
-                  <div className={styles.voucherSection}>
-                    <h4 className={styles.voucherSectionTitle}>Passenger Manifest</h4>
-                    <table className={styles.printTable}>
-                      <thead>
-                        <tr>
-                          <th>No.</th>
-                          <th>Passenger Name</th>
-                          <th>Nationality</th>
-                          <th>Passport No.</th>
-                          <th>Expiry Date</th>
-                          <th>Record Locator (PNR)</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {docData.passengers.map((p, idx) => (
-                          <tr key={idx}>
-                            <td>{idx + 1}</td>
-                            <td style={{ fontWeight: '700' }}>
-                              {p.title} {p.givenName} {p.surname}
-                            </td>
-                            <td>{p.nationality || 'PAKISTANI'}</td>
-                            <td style={{ fontFamily: 'monospace' }}>{p.passportNo}</td>
-                            <td>{p.passportExpiry}</td>
-                            <td style={{ fontWeight: '700', fontFamily: 'monospace', color: '#0d9488' }}>{p.pnr}</td>
-                            <td style={{ fontWeight: '700' }}>{p.status}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className={styles.voucherSection}>
-                    <h4 className={styles.voucherSectionTitle}>Flight Itinerary Sectors</h4>
-                    <table className={styles.printTable}>
-                      <thead>
-                        <tr>
-                          <th>Carrier</th>
-                          <th>Flight No</th>
-                          <th>Departing From</th>
-                          <th>Departure Date / Time</th>
-                          <th>Arriving To</th>
-                          <th>Arrival Date / Time</th>
-                          <th>Class</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {docData.sectors.map((s, idx) => (
-                          <tr key={idx}>
-                            <td style={{ fontWeight: '700' }}>{docData.airline}</td>
-                            <td style={{ fontWeight: '700', fontFamily: 'monospace' }}>{s.flightNo}</td>
-                            <td>{s.from}</td>
-                            <td>{s.depDate} &bull; <strong>{s.depTime}</strong></td>
-                            <td>{s.to}</td>
-                            <td>{s.arrDate} &bull; <strong>{s.arrTime}</strong></td>
-                            <td>{docData.classCabin}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className={styles.voucherSection}>
-                    <h4 className={styles.voucherSectionTitle}>Allowances & Services</h4>
-                    <div className={styles.voucherGrid2}>
-                      <div>
-                        <p><span className={styles.infoLabel}>Checked Baggage:</span><span className={styles.infoValue}>{docData.baggageChecked}</span></p>
-                        <p><span className={styles.infoLabel}>Cabin Baggage:</span><span className={styles.infoValue}>{docData.baggageHand}</span></p>
-                      </div>
-                      <div>
-                        <p><span className={styles.infoLabel}>Meal Plan:</span><span className={styles.infoValue}>{docData.meals}</span></p>
-                        <p><span className={styles.infoLabel}>Assigned Seat:</span><span className={styles.infoValue}>{docData.seatNo}</span></p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {docData.otherInfo && (
-                    <div className={styles.voucherSection}>
-                      <h4 className={styles.voucherSectionTitle}>Remarks & Important Notices</h4>
-                      <p style={{ fontSize: '11px', color: '#4b5563', fontStyle: 'italic' }}>
-                        {docData.otherInfo}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
-                <div className={styles.voucherFooter}>
+                {/* Status Alert Box */}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '6px', padding: '14px 18px', marginBottom: '25px' }}>
+                  <span style={{ fontSize: '22px' }}>🟢</span>
+                  <div>
+                    <div style={{ fontWeight: 'bold', color: '#065f46', fontSize: '14px' }}>
+                      Your booking is {docData.status || 'CONFIRMED'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#047857', marginTop: '2px' }}>
+                      Thank you for booking with us.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passenger Table */}
+                <div style={{ marginBottom: '25px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0', color: '#1e293b' }}>Passenger Details</h4>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1px solid #cbd5e1' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#035a37', color: '#ffffff' }}>
+                        <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>#</th>
+                        <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passenger Name</th>
+                        <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Passport No</th>
+                        <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>PNR</th>
+                        <th style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', backgroundColor: '#035a37', color: '#ffffff' }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {docData.passengers?.map((p, idx) => (
+                        <tr key={idx}>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center' }}>{idx + 1}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                            {p.title} {p.givenName} {p.surname}
+                          </td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontFamily: 'monospace' }}>{p.passportNo || 'N/A'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', color: '#035a37' }}>{p.pnr || 'N/A'}</td>
+                          <td style={{ border: '1px solid #cbd5e1', padding: '8px 10px', textAlign: 'center', fontWeight: 'bold', color: '#10b981', fontSize: '11px' }}>{p.status || 'CONFIRMED'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Journey Details Cards */}
+                {docData.sectors?.map((sector, idx) => {
+                  const dep = parseAirportSelection(sector.from);
+                  const arr = parseAirportSelection(sector.to);
+                  
+                  return (
+                    <div key={idx} className={styles.ticketCard} style={{ marginBottom: '25px' }}>
+                      <div className={styles.ticketCardHeader} style={{ backgroundColor: '#035a37' }}>
+                        ✈ DEPARTURE FROM {dep.city.toUpperCase()} {sector.flightNo}
+                      </div>
+
+                      <div className={styles.ticketCardBody}>
+                        <div className={styles.routeDetails}>
+                          <div className={styles.routeCol}>
+                            <div className={styles.routeDate}>{formatFlightDate(sector.depDate)}</div>
+                            <div className={styles.routeTime}>{sector.depTime || '00:00'}</div>
+                            <div className={styles.routeCode}>{dep.code}</div>
+                            <div className={styles.routeCity}>{dep.city}</div>
+                            <div className={styles.routeAirport}>{dep.airport}</div>
+                          </div>
+
+                          <div className={styles.flightPath}>
+                            <div className={styles.flightLine}></div>
+                            <Plane size={14} className={styles.flightIcon} style={{ transform: 'rotate(90deg)', color: '#035a37' }} />
+                          </div>
+
+                          <div className={styles.routeCol}>
+                            <div className={styles.routeDate}>{formatFlightDate(sector.arrDate)}</div>
+                            <div className={styles.routeTime}>{sector.arrTime || '00:00'}</div>
+                            <div className={styles.routeCode}>{arr.code}</div>
+                            <div className={styles.routeCity}>{arr.city}</div>
+                            <div className={styles.routeAirport}>{arr.airport}</div>
+                          </div>
+                        </div>
+
+                        <div className={styles.serviceDetails} style={{ padding: '12px' }}>
+                          <div className={styles.serviceClass}>{docData.classCabin}</div>
+                          
+                          <div className={styles.serviceItem}>
+                            <Briefcase size={13} className={styles.serviceIcon} />
+                            <span>{docData.baggageChecked} kg checked baggage</span>
+                          </div>
+
+                          <div className={styles.serviceItem}>
+                            <Briefcase size={13} className={styles.serviceIcon} style={{ opacity: 0.7 }} />
+                            <span>{docData.baggageHand} kg hand baggage</span>
+                          </div>
+
+                          <div className={styles.serviceItem}>
+                            <Utensils size={13} className={styles.serviceIcon} />
+                            <span>Meal: {docData.meals}</span>
+                          </div>
+
+                          <div className={styles.serviceItem}>
+                            <Armchair size={13} className={styles.serviceIcon} />
+                            <span>Seat: {docData.seatNo}</span>
+                          </div>
+
+                          {docData.otherInfo && (
+                            <div className={styles.serviceItem}>
+                              <Headphones size={13} className={styles.serviceIcon} />
+                              <span style={{ fontSize: '9.5px' }}>{docData.otherInfo}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Rules Bullet points list */}
+                <div className={styles.rulesContainer}>
+                  <div className={styles.rulesTitle}>Rules:-</div>
+                  <ul className={styles.rulesList}>
+                    <li>
+                      <span className={styles.rulesBullet}>&bull;</span>
+                      Please Report Airline Check-In Counter 4 Hours Before Flight Departure.
+                    </li>
+                    <li>
+                      <span className={styles.rulesBullet}>&bull;</span>
+                      Please Reconfirm the Ticket Before 48 Hours of Flight Departure.
+                    </li>
+                    <li>
+                      <span className={styles.rulesBullet}>&bull;</span>
+                      Baggage Allowance as Per Airline Policy. Hand Baggage 7 kg Included.
+                    </li>
+                    <li>
+                      <span className={styles.rulesBullet}>&bull;</span>
+                      Ticket Cancellation / Date Change Penalities Apply as Per Fare Rules.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className={styles.voucherFooter} style={{ marginTop: '20px' }}>
                   <p>Thank you for choosing Fly To Way Travels. For inquiries, contact info@flytoway.com.</p>
                   <p style={{ marginTop: '4px', fontSize: '9px', color: '#9ca3af' }}>Generates on Fly To Way Travel Management Portal.</p>
                 </div>
