@@ -1201,9 +1201,9 @@ function HotelVoucherGeneratorContent() {
                     <div style={{ backgroundColor: '#0a2e5c', color: '#ffffff', padding: isMulti ? '5px 10px' : '7px 12px', fontWeight: 'bold', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>📝</span> <span>REMARKS / NOTE</span>
                     </div>
-                    <div style={{ padding: cardPad, fontSize: '10.5px', color: '#dc2626', minHeight: '24px' }}>
+                    <div style={{ padding: cardPad, fontSize: '9px', color: '#dc2626', minHeight: '24px' }}>
                       {voucherData.remarks && voucherData.remarks.trim() !== '' ? (
-                        <div style={{ textTransform: 'uppercase', fontWeight: 'bold', color: '#dc2626' }}>{voucherData.remarks}</div>
+                        <div style={{ textTransform: 'uppercase', fontWeight: 'bold', color: '#dc2626', fontSize: '9px', lineHeight: '1.4' }}>{voucherData.remarks}</div>
                       ) : null}
                     </div>
                   </div>
@@ -1241,25 +1241,27 @@ function HotelVoucherGeneratorContent() {
                   <div style={{
                     backgroundColor: '#0a2e5c',
                     color: '#ffffff',
-                    padding: isMulti ? '8px 14px' : '12px 20px',
+                    padding: isMulti ? '6px 10px' : '8px 14px',
                     borderRadius: '4px',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr auto 1fr',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    fontSize: '10px',
+                    gap: '4px 10px',
+                    fontSize: '8.5px',
                     fontWeight: 'bold',
                     width: '100%',
                     boxSizing: 'border-box'
                   }}>
-                    <div style={{ textAlign: 'left' }}>
+                    <div style={{ whiteSpace: 'nowrap' }}>
                       📍 {voucherData.officeAddress || 'College Road, Lahore - Pakistan'}
                     </div>
-                    <div style={{ textAlign: 'center', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <span>📞 {voucherData.phone || '+923082122760'}</span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <span style={{ whiteSpace: 'nowrap' }}>📞 {voucherData.phone || '+923082122760'}</span>
                       <span style={{ opacity: 0.7 }}>|</span>
-                      <span>✉ {voucherData.email || 'info@flytoway.com'}</span>
+                      <span style={{ whiteSpace: 'nowrap' }}>✉ {voucherData.email || 'info@flytoway.com'}</span>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ whiteSpace: 'nowrap' }}>
                       🌐 www.flytoway.com
                     </div>
                   </div>
