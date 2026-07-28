@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Plane, BookOpen, MapPin, Phone, UserCheck, ShieldAlert, FileText, Menu, X } from 'lucide-react';
@@ -9,6 +9,13 @@ import styles from './Navbar.module.css';
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Helper to determine if link is active
   const isActive = (path) => pathname === path;
@@ -17,11 +24,11 @@ export default function Navbar() {
   const isAdminPage = pathname.startsWith('/admin');
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={`${styles.container} container`}>
         <Link href="/" className={styles.logoLink} onClick={() => setIsOpen(false)}>
           <div className={styles.logo} style={{ display: 'flex', alignItems: 'center' }}>
-            <img src="/logo.png" alt="Fly To Way Logo" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="Fly To Way Logo" className={`${styles.logoImg} ${scrolled ? styles.logoImgScrolled : ''}`} />
           </div>
         </Link>
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { 
   Plane, Hotel, Compass, Shield, Send, CheckCircle, 
-  MapPin, Clock, FileText, ArrowRight, UserCheck, MessageSquare
+  MapPin, Clock, FileText, ArrowRight, MessageSquare
 } from 'lucide-react';
 import styles from './page.module.css';
 import AnimatedSection from '@/components/AnimatedSection';
@@ -81,8 +81,8 @@ export default function Home() {
             <Link href="#contact" className="btn btn-secondary btn-lg">
               Book Pilgrim Package <ArrowRight size={16} className={styles.arrowIconAnim} />
             </Link>
-            <Link href="/login" className="btn btn-outline btn-lg">
-              <UserCheck size={16} /> Portal Login
+            <Link href="/check-booking" className="btn btn-outline btn-lg">
+              <FileText size={16} /> Check Booking
             </Link>
           </div>
         </div>
