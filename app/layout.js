@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import AdPopup from "@/components/AdPopup";
 
 export const metadata = {
   title: "Fly To Way | Premium Pilgrimage & Travel Management",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning>
+        <AdPopup />
         <Navbar />
         <main style={{ flex: 1 }}>
           {children}

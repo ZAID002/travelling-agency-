@@ -1,0 +1,263 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup {
+  position: relative;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  width: 100%;
+  max-width: 560px;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px 18px;
+  background: linear-gradient(135deg, rgba(15, 76, 129, 0.9) 0%, rgba(10, 46, 92, 0.9) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.headerTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  background: rgba(239, 68, 68, 0.75);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.1);
+}
+
+.imageArea {
+  position: relative;
+  width: 100%;
+  background: #000;
+  line-height: 0;
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+.adImage {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+/* Carousel controls */
+.carouselControls {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  border: none;
+  padding: 0;
+}
+
+.dot.activeDot {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.2s ease;
+  z-index: 10;
+}
+
+.navBtn:hover {
+  background: rgba(15, 76, 129, 0.8);
+}
+
+.navPrev {
+  left: 10px;
+}
+
+.navNext {
+  right: 10px;
+}
+
+.footer {
+  padding: 10px 18px 14px 18px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.footerText {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+}
+
+.adTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2px;
+}
+
+/* ─── Mobile Responsive ─── */
+@media (max-width: 600px) {
+  .overlay {
+    padding: 10px;
+    align-items: flex-end;  /* slide up from bottom on mobile */
+  }
+
+  .popup {
+    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+  }
+
+  .imageArea {
+    max-height: 55vw;
+  }
+
+  .adImage {
+    max-height: 55vw;
+    object-fit: cover;
+  }
+
+  .header {
+    padding: 10px 14px 8px 14px;
+  }
+
+  .headerTitle {
+    font-size: 10px;
+  }
+
+  .closeBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .navBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+  }
+
+  .footer {
+    padding: 8px 14px 12px 14px;
+  }
+
+  .footerText {
+    font-size: 10px;
+  }
+
+  .adTitle {
+    font-size: 12px;
+  }
+}

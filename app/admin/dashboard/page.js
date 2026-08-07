@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { 
   Plane, Hotel, ShieldCheck, Search, Plus, 
   Eye, FileText, Settings, User, RefreshCw,
-  ChevronDown, ChevronUp, Mail, Phone, MessageSquare, Trash2
+  ChevronDown, ChevronUp, Mail, Phone, MessageSquare, Trash2, Megaphone
 } from 'lucide-react';
 import styles from './dashboard.module.css';
 
@@ -181,6 +181,9 @@ export default function AdminDashboard() {
             </Link>
             <Link href="/admin/invoices" className="btn btn-secondary" style={{ backgroundColor: '#4f46e5', borderColor: '#4f46e5', color: '#ffffff' }}>
               <Plus size={16} /> New Invoice
+            </Link>
+            <Link href="/admin/advertisements" className="btn btn-secondary" style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff' }}>
+              <Megaphone size={16} /> Manage Ads
             </Link>
           </div>
         </div>
