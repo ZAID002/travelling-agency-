@@ -208,24 +208,26 @@
   margin-bottom: 2px;
 }
 
-/* ─── Mobile Responsive ─── */
+/* ─── Mobile Responsive (Portrait) ─── */
 @media (max-width: 600px) {
   .overlay {
-    padding: 10px;
-    align-items: flex-end;  /* slide up from bottom on mobile */
+    padding: 12px;
+    align-items: center;    /* center vertically */
+    justify-content: center;
   }
 
   .popup {
-    border-radius: 16px 16px 0 0;
+    border-radius: 16px;    /* all 4 corners rounded */
     max-width: 100%;
+    width: 100%;
   }
 
   .imageArea {
-    max-height: 55vw;
+    max-height: 56vw;
   }
 
   .adImage {
-    max-height: 55vw;
+    max-height: 56vw;
     object-fit: cover;
   }
 
@@ -238,19 +240,19 @@
   }
 
   .closeBtn {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-  }
-
-  .navBtn {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     font-size: 15px;
   }
 
+  .navBtn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
   .footer {
-    padding: 8px 14px 12px 14px;
+    padding: 8px 14px 10px 14px;
   }
 
   .footerText {
@@ -259,5 +261,57 @@
 
   .adTitle {
     font-size: 12px;
+  }
+}
+
+/* ─── Mobile Landscape ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .overlay {
+    padding: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .popup {
+    border-radius: 12px;
+    max-width: 70vw;       /* don't take full width in landscape */
+    width: 70vw;
+    display: flex;
+    flex-direction: row;   /* header+image+footer side by side feel */
+  }
+
+  .imageArea {
+    max-height: 80vh;
+  }
+
+  .adImage {
+    max-height: 80vh;
+    object-fit: contain;
+  }
+
+  .header {
+    padding: 8px 12px 6px 12px;
+  }
+
+  .headerTitle {
+    font-size: 9px;
+  }
+
+  .closeBtn {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  .footer {
+    padding: 6px 12px 8px 12px;
+  }
+
+  .footerText {
+    font-size: 9px;
+  }
+
+  .adTitle {
+    font-size: 11px;
   }
 }
